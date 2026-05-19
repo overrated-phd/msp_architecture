@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSP Architecture — Detailed Block Diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafaf8;--surface:#fff;--surface2:#f4f3f0;--border:#e2e0da;--border2:#ccc9c0;
+  --text:#1a1a18;--text2:#5a5850;--text3:#8a8878;
+  --acc:#0055d4;--acc2:#0074e8;--acc-bg:#eef4ff;
+  --red:#c44;--green:#2a8;--amber:#b80;--violet:#66a;
+  --pipe-shared:rgba(0,85,212,0.08);--pipe-model:rgba(42,136,136,0.08);--pipe-label:rgba(180,90,40,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:15.5px}
+::selection{background:var(--acc-bg);color:var(--acc)}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;overflow-y:auto;z-index:100}
+.nav-brand{font-family:'DM Serif Text',serif;font-size:.95rem;color:var(--acc);margin-bottom:1.2rem;line-height:1.3}
+.nav a{display:block;color:var(--text2);text-decoration:none;font-size:.76rem;padding:.3rem 0 .3rem .8rem;border-left:2px solid transparent;transition:.2s}
+.nav a:hover{color:var(--acc);border-left-color:var(--acc)}
+.nav .s{padding-left:1.5rem;font-size:.7rem;color:var(--text3)}
+@media(max-width:1060px){.nav{display:none}.main{margin-left:0!important}}
+
+.main{margin-left:240px}
+.ct{max-width:820px;margin:0 auto;padding:0 2.5rem}
+
+/* HERO */
+.hero{padding:5rem 2.5rem 3rem;max-width:820px;margin:0 auto}
+.hero-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--acc);margin-bottom:.8rem}
+.hero h1{font-family:'DM Serif Text',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;color:var(--text)}
+.hero h1 em{font-style:italic;color:var(--acc)}
+.hero-sub{margin-top:1rem;font-size:1rem;color:var(--text2);max-width:600px}
+
+/* SECTIONS */
+section{padding:3.5rem 0}section+section{border-top:1px solid var(--border)}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--acc);margin-bottom:.4rem}
+h2{font-family:'DM Serif Text',serif;font-size:1.6rem;font-weight:400;margin-bottom:1rem;line-height:1.25}
+h3{font-family:'DM Serif Text',serif;font-size:1.15rem;font-weight:400;margin:1.8rem 0 .6rem;color:var(--text)}
+h4{font-size:.88rem;font-weight:700;margin:1.2rem 0 .3rem}
+p{margin-bottom:.9rem}
+.hl{color:var(--acc);font-weight:600}
+.hr{color:var(--red);font-weight:600}
+.hg{color:var(--green);font-weight:600}
+.ha{color:var(--amber);font-weight:600}
+
+/* BLOCK DIAGRAM */
+.bd{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1rem;margin:1.5rem 0;overflow-x:auto}
+.bd svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.bd-cap{text-align:center;font-size:.72rem;color:var(--text3);margin-top:.6rem;font-style:italic}
+
+/* SPEC TABLE */
+.spec{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.84rem}
+.spec th,.spec td{padding:.45rem .7rem;border:1px solid var(--border);text-align:left}
+.spec th{background:var(--surface2);font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text2)}
+.spec td:first-child{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--acc)}
+.spec tr:nth-child(even) td{background:var(--surface2)}
+
+/* INFO BOX */
+.info{background:var(--acc-bg);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:.9rem 1.1rem;margin:1rem 0;font-size:.88rem;color:var(--text2)}
+.info strong{color:var(--acc);font-weight:600}
+
+/* EQUATION */
+.eq{background:var(--surface2);border-left:3px solid var(--border2);border-radius:0 8px 8px 0;padding:.8rem 1rem;margin:1rem 0;font-family:'IBM Plex Mono',monospace;font-size:.8rem;line-height:1.9;overflow-x:auto;white-space:pre-wrap}
+.eq .dim{color:var(--text3);font-size:.72rem}
+
+/* FIG */
+.fig{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;margin:1.5rem 0;text-align:center}
+.fig img{max-width:100%;border-radius:8px}
+.fig-cap{font-size:.72rem;color:var(--text3);margin-top:.5rem;font-style:italic}
+
+/* SIGNAL TAG */
+.sig{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:.1rem .4rem;border-radius:3px;margin:0 .1rem}
+.sig-in{background:#e8f4e8;color:#2a7a2a;border:1px solid #c8e8c8}
+.sig-out{background:#ffe8e0;color:#a03020;border:1px solid #f0d0c0}
+.sig-int{background:#e8e8ff;color:#4040a0;border:1px solid #d0d0f0}
+.sig-mem{background:#fff8e0;color:#806000;border:1px solid #f0e8c0}
+
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.72rem;color:var(--text3);max-width:820px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">MSP Architecture<br>Block Diagrams</div>
+  <a href="#top-level">Top-Level Pipeline</a>
+  <a href="#cache-ag">1. Cache AG</a>
+  <a href="#cache-ag-nic" class="s">Next Image Cache</a>
+  <a href="#gradient">2. Gradient Calculation</a>
+  <a href="#accuracy">3. Accuracy & Weight</a>
+  <a href="#accuracy-newton" class="s">Newton Reciprocal</a>
+  <a href="#moment">4. Gradient Moment</a>
+  <a href="#moment-ctx" class="s">Context Switching</a>
+  <a href="#labeling">5. Region Labeling</a>
+  <a href="#model">6. Motion Model Calc</a>
+  <a href="#inverse" class="s">Inverse Matrix</a>
+  <a href="#reciprocal" class="s">Pivot Reciprocal</a>
+  <a href="#prediction">7. Region Prediction</a>
+  <a href="#timing">Timing Diagram</a>
+  <a href="#signals">Signal Bit Widths</a>
+  <a href="#memory">Memory Map</a>
+</nav>
+
+<div class="main">
+
+<header class="hero">
+  <div class="hero-tag">Architecture Deep-Dive</div>
+  <h1>MSP <em>Pixel Pipeline</em> Architecture</h1>
+  <p class="hero-sub">Detailed block diagrams of every hardware module in the Affine Motion Segmentation Processor — from Cache AG through gradient computation, moment accumulation, region labeling, to inverse matrix and prediction circuits.</p>
+</header>
+
+<!-- ══════ TOP LEVEL ══════ -->
+<section id="top-level">
+<div class="ct">
+  <div class="sl">Overview</div>
+  <h2>Top-Level Pipeline Architecture</h2>
+  <p>The entire processor forms a single <span class="hl">pixel-level pipeline</span>. Data enters at Cache AG, flows through shared preprocessing (gradient → accuracy → weight), then branches into two parallel paths: the <span class="hg">model estimation path</span> (gradient moment accumulation → inverse matrix → θ calculation) and the <span class="ha">region labeling path</span> (energy calculation → label decision).</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs>
+        <marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#666"/></marker>
+        <marker id="ab" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#0055d4"/></marker>
+      </defs>
+
+      <!-- External memories (dashed) -->
+      <rect x="5" y="20" width="80" height="70" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="45" y="45" text-anchor="middle" fill="#888" font-size="9">Current</text>
+      <text x="45" y="57" text-anchor="middle" fill="#888" font-size="9">Label Map</text>
+      <text x="45" y="72" text-anchor="middle" fill="#888" font-size="8">(external)</text>
+
+      <rect x="5" y="100" width="80" height="55" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="45" y="122" text-anchor="middle" fill="#888" font-size="9">Next Image</text>
+      <text x="45" y="137" text-anchor="middle" fill="#888" font-size="8">(external)</text>
+
+      <!-- SHARED PIPELINE bg -->
+      <rect x="95" y="5" width="460" height="165" rx="8" fill="rgba(0,85,212,0.04)" stroke="#c0d4f0" stroke-dasharray="6,3"/>
+      <text x="105" y="22" fill="#0055d4" font-size="8" font-weight="600" letter-spacing="1">SHARED PREPROCESSING PIPELINE</text>
+
+      <!-- 1. Cache AG -->
+      <rect x="105" y="35" width="95" height="55" rx="6" fill="#fff" stroke="#0055d4" stroke-width="1.5"/>
+      <text x="152" y="55" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="600">Cache AG</text>
+      <text x="152" y="70" text-anchor="middle" fill="#666" font-size="8">+ NIC (25 rows)</text>
+      <text x="152" y="80" text-anchor="middle" fill="#666" font-size="8">16 banks</text>
+
+      <line x1="85" y1="55" x2="105" y2="55" stroke="#666" marker-end="url(#a)"/>
+      <line x1="85" y1="127" x2="152" y2="90" stroke="#666" marker-end="url(#a)"/>
+
+      <!-- RT0, MMT0 -->
+      <rect x="105" y="105" width="45" height="22" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="127" y="120" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">RT0</text>
+      <rect x="155" y="105" width="45" height="22" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="177" y="120" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">MMT0</text>
+      <line x1="152" y1="90" x2="152" y2="105" stroke="#b0a050" stroke-dasharray="3,2"/>
+
+      <line x1="200" y1="62" x2="225" y2="62" stroke="#666" marker-end="url(#a)"/>
+
+      <!-- 2. Gradient -->
+      <rect x="230" y="35" width="100" height="55" rx="6" fill="#fff" stroke="#0055d4" stroke-width="1.5"/>
+      <text x="280" y="55" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="600">Gradient Calc</text>
+      <text x="280" y="70" text-anchor="middle" fill="#666" font-size="8">Bilinear interp</text>
+      <text x="280" y="80" text-anchor="middle" fill="#666" font-size="8">→ Ix, Iy, It</text>
+
+      <line x1="330" y1="62" x2="355" y2="62" stroke="#666" marker-end="url(#a)"/>
+
+      <!-- 3. Accuracy + Weight -->
+      <rect x="360" y="35" width="110" height="55" rx="6" fill="#fff" stroke="#0055d4" stroke-width="1.5"/>
+      <text x="415" y="53" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="600">Accuracy &amp;</text>
+      <text x="415" y="66" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="600">Weight Calc</text>
+      <text x="415" y="80" text-anchor="middle" fill="#666" font-size="8">qᵢ, wᵢ + 2-line buf</text>
+
+      <!-- WB memory -->
+      <rect x="395" y="105" width="50" height="20" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="420" y="119" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">WB</text>
+      <line x1="415" y1="90" x2="415" y2="105" stroke="#b0a050" stroke-dasharray="3,2"/>
+
+      <!-- Branch point -->
+      <line x1="470" y1="62" x2="505" y2="62" stroke="#666"/>
+      <circle cx="505" cy="62" r="4" fill="#0055d4"/>
+
+      <!-- MODEL PATH bg -->
+      <rect x="95" y="185" width="400" height="145" rx="8" fill="rgba(42,136,136,0.04)" stroke="#a0d8d0" stroke-dasharray="6,3"/>
+      <text x="105" y="202" fill="#2a8868" font-size="8" font-weight="600" letter-spacing="1">MODEL ESTIMATION PATH</text>
+
+      <!-- 4. Gradient Moment -->
+      <line x1="505" y1="62" x2="505" y2="215" stroke="#2a8868" stroke-width="1.2" marker-end="url(#a)"/>
+      <rect x="105" y="210" width="140" height="55" rx="6" fill="#fff" stroke="#2a8868" stroke-width="1.5"/>
+      <text x="175" y="230" text-anchor="middle" fill="#2a8868" font-size="10" font-weight="600">Gradient Moment</text>
+      <text x="175" y="245" text-anchor="middle" fill="#666" font-size="8">G (7×7) &amp; d (7×1)</text>
+      <text x="175" y="256" text-anchor="middle" fill="#666" font-size="8">accumulation per region</text>
+      <line x1="505" y1="237" x2="245" y2="237" stroke="#2a8868" stroke-width="1.2" marker-end="url(#a)"/>
+
+      <!-- Gd memory -->
+      <rect x="120" y="275" width="50" height="20" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="145" y="289" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">Gd mem</text>
+
+      <!-- MMT2 -->
+      <rect x="200" y="275" width="50" height="20" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="225" y="289" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">MMT2</text>
+
+      <line x1="245" y1="237" x2="270" y2="237" stroke="#2a8868" marker-end="url(#a)"/>
+
+      <!-- 6. Motion Model Calc -->
+      <rect x="275" y="210" width="130" height="55" rx="6" fill="#fff" stroke="#2a8868" stroke-width="1.5"/>
+      <text x="340" y="230" text-anchor="middle" fill="#2a8868" font-size="10" font-weight="600">Motion Model Calc</text>
+      <text x="340" y="245" text-anchor="middle" fill="#666" font-size="8">G⁻¹ Gauss-Jordan</text>
+      <text x="340" y="256" text-anchor="middle" fill="#666" font-size="8">θ = G⁻¹·d → MMT</text>
+
+      <!-- LABEL PATH bg -->
+      <rect x="520" y="185" width="250" height="145" rx="8" fill="rgba(180,90,40,0.04)" stroke="#e0c0a0" stroke-dasharray="6,3"/>
+      <text x="530" y="202" fill="#b05a28" font-size="8" font-weight="600" letter-spacing="1">REGION LABELING PATH</text>
+
+      <!-- 5. Region Labeling -->
+      <line x1="505" y1="62" x2="640" y2="210" stroke="#b05a28" stroke-width="1.2" marker-end="url(#a)"/>
+      <rect x="545" y="215" width="130" height="55" rx="6" fill="#fff" stroke="#b05a28" stroke-width="1.5"/>
+      <text x="610" y="235" text-anchor="middle" fill="#b05a28" font-size="10" font-weight="600">Region Labeling</text>
+      <text x="610" y="250" text-anchor="middle" fill="#666" font-size="8">U₁+U₂+U₃ energy</text>
+      <text x="610" y="261" text-anchor="middle" fill="#666" font-size="8">label decision</text>
+
+      <!-- LB memory -->
+      <rect x="690" y="225" width="45" height="20" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="712" y="239" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">LB</text>
+
+      <!-- Output: next label map -->
+      <line x1="610" y1="270" x2="610" y2="300" stroke="#666" marker-end="url(#a)"/>
+      <rect x="555" y="305" width="110" height="32" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="610" y="325" text-anchor="middle" fill="#888" font-size="9">Next Label Map</text>
+
+      <!-- PREDICTION -->
+      <rect x="95" y="350" width="280" height="55" rx="8" fill="rgba(100,60,160,0.04)" stroke="#c0b0e0" stroke-dasharray="6,3"/>
+      <text x="105" y="367" fill="#664488" font-size="8" font-weight="600" letter-spacing="1">PREDICTION (1×/FRAME)</text>
+      <rect x="115" y="375" width="120" height="22" rx="4" fill="#fff" stroke="#66a" stroke-width="1.2"/>
+      <text x="175" y="390" text-anchor="middle" fill="#66a" font-size="9" font-weight="600">Region Prediction</text>
+      <rect x="250" y="375" width="50" height="22" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="275" y="390" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">RT1,MMT1</text>
+      <rect x="310" y="375" width="30" height="22" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="325" y="390" text-anchor="middle" fill="#806000" font-size="7" font-weight="600">PB</text>
+
+      <!-- Throughput label -->
+      <text x="390" y="395" fill="#0055d4" font-size="10" font-weight="700">1 pixel / 1 clock cycle</text>
+
+      <!-- Pipeline flow arrow -->
+      <line x1="100" y1="145" x2="540" y2="145" stroke="#0055d4" stroke-width="0.6" stroke-dasharray="2,2"/>
+      <text x="320" y="157" text-anchor="middle" fill="#0055d4" font-size="7.5">pixel data stream (raster scan order) →</text>
+    </svg>
+    <div class="bd-cap">Fig. 1 — Top-level architecture. Shared preprocessing (blue) feeds both the model estimation path (green) and region labeling path (orange). Dashed boxes = external memory. Yellow = on-chip tables/buffers.</div>
+  </div>
+
+  <div class="fig">
+    <img src="data:image/jpeg;base64,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HyBnQs3DxmnIwf8AktdeeAnCG73iS7V+hLU+rkdve6PfEx7j3ksY4NJPwdVPrJaLXZLVBa7Nb6W30MDdsVPTRCONg9DW9Ag8idhLX+jNG8MNSUmqtR26zVMV255hq5gx7mGJjMtb3u8ZrgQASMLe9v8AhmFo0BrOkiNXbbXdHOmkhO5pEnLew5HTDuWQD3dR51ctz4GcJ7lqWXUVdoa0z3GWXmyPc13LkeTkudGDsJJ6nI6+VTe6WW03SyS2S5W2kq7ZNFyZKSWFronMHc3aemBgY82EEFrOOfCqm0qzUR1raZaZ7A+OCKcPqnk9QwQjx9/kwR0PfhUn9D9mdUag4o1L6eamdNcKeQwzN2yRkvqDtcPI4ZwR51d+lOB3CnTF7jvVl0VbaevidvimfvmMTvsmCRxDT5iBkKUaa0bpnTd0u9zsdnpqCsvM/hFwliBBqJMuO52TjOXOPTHeUHnDs7/v1+LX/lT/AN4iV1dpDR1VrvgtqLTdvYH180DZaRpPu5YniRrf/Vt2/hUgsehdJ2TVlz1VarJTUt6ugIrathdvmBcHHOTjvAPQeRSMgHvGUHmrsn8X9ETcMrbpHVNzt1i1BYYzQz09yc2nMjYyQ1zS/AJxgOb3gtOR3FWXa+MPDC5cQ6HRVkvdJdLxVNe6M0EPOhYWtLiHStG0HAPl8nXGRnN1vwc4Z6zuTrnqTR1tra53u6kB0Usnm3OjILvw5W10Jw90VoeKSPSmmrdaTKMSSQRe2PHmc85cR6CUEoREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQF8SRRSY5kbH47tzQcL7RAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQERMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedMjzoCJkedEBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQERcO6NJzhByiqik1lxmluMMM/By3xUb5msfUjVcLi2MuwX7eX1wOuM+hTDiFdtXWi008+j9JQ6mrHz7JaeW5sohHHtcd+9zSD1AGPTnyIJOihHD2/8QLvWVcesdA02mII42up5Yr3HW85xOC0hrRtwOuStZq3VXFi36hrKPTvCuivdrjc0U9dJqWKmdMNoJJjcwluDkd/kz5UFlItGa/UHrHNybYYjf/Aed6leGt2eEbM8jn4xjd4u/GPLhRLSGquLFx1FSUeouFdFZLXIXeEV0epIql0IDSRiNrAXZcAO/pnPkQWSihHEK/8AEG0V1LHo7QNNqenkiLp5Zb3HRcl4dgN2ua7dkdchbPhrfb1qPScF01Dpqo01cnSSxzW+aXmGPY8tDg7AyHABwOO4oMDUNFfLnrSqoaS+Xq2UUmn5Io309LHyY6iSXAmEriSZmNb0YW7cEnJzgdtbpS+TyVbo9cXmnE5quW1kcWIebCyNm3Lf9k5rpG5+uec5GAskU0fsoPq+U3mGzNj5nqU7OOe448LztPn5OMj3XcVquNOu63QdgtdXbLC2+3C63imtNJSOqxTNdLNu2kyFrgB4uO7yoMyt0pfJzUmPXF6p+aagsDI4vauZTsiZjLf9m9plbn65xzkdF3+tu78zd67rrjwzwjbsj9x4NyeV3e53+3eff6Oig/r345fxI27+2EH+Wnr345fxI27+2EH+WgmNFpS+QGmMmuL1Uco0xeHxxe28unfE/OG/7R7hK7H1zRjA6JRaUvkElI6XXF5qBAaXmNfHFiblQvjfuw3/AGrnNkdj65gxgZCh3r345fxI27+2EH+Wnr345fxI27+2EH+WgmlPpe9RtoQ/Wt4lNNDQxylzIv8ASHQSF8j3eL3zAhj8dwAxgrro9KXyAQCTXN6qOWKcO3xxe2cupdM4nDfr2OELv5DRjrkqH+vfjl/Ejbv7YQf5aevfjl/Ejbv7YQf5aCX0+kr7G1gfrq9SlrYgS6OLxttU6Zx6N+uYRCf5AB911XNZpS+Tsqmx64vVOZhUhhZHETFzZ2SsLct/2bWmJufrXnOTgqvtT8UuMOnNO3C/3fgvQQ2+3076mpkbqyJ5bG0ZJDRFk9PIFcWn69t1sdDc2xmJtXTRzhhOS0PaHYz6MoI9W6Tvk8dW2LXN6pzOKsRuZHFmHnSsfHty3/ZNY5jc+R5zk4XZPpe9SGs2a1vEYqGV7Y9rIvaDUbeUW+L3wbTsz37juypWqw4l8RtT2HX9s0bpHRMOprjXW6a4O5t2bRNjjjkDDguY4E5cPMgkNXpS+TGbl64vMHMdMW7I4vE30rYWgZb9Y9pmH8txB6dFzPpW+SF5bre8x7nPI2xxdN1IIAOrfrZBzx/LOPc9FDfXvxy/iRt39sIP8tPXvxy/iRt39sIP8tBN4dM3hkkTnaxu0gZVwTuaWR4exlNynRHxfcvf7afLu7unRdNBpS+U8lG6XXF5qBT+B8xr44sT8mN7ZN2G/wC1L2udjuLG4wMqHevfjl/Ejbv7YQf5aevfjl/Ejbv7YQf5aCY0GlL5TuozLrm9VIp/A+YHxxe38gSCTdhv+23tL8d2xuMdUpdKXyKGkY/XN6mdBTUsMjnxxZmdFPzHyOw33Urfa3Y6be7B6qHevfjl/Ejbv7YQf5aevfjl/Ejbv7YQf5aCYRaTvrAA7XV6fgNHWOLrirM5PufLH7R/MGfddVw/SV9cwga7vbSWkZEcXQ+F8/PuftftH8zr7rqoDUcXuIFj1Xpe06z4WU1mpdQ3WO2w1UOoo6ose/y7GxjIHf3hXcO5BEK7Sd8qI6xsWub1TGo8M5bmRxEwc58bo9uW/wCxDHNZnvD3Zz0XNfpS+VHhvK1xeqbwjwzl7I4jyOdy+Xty3/Y7HbM9+92c9FLvIqduPFHX9VrzUunNGcMqa/wWCpipp6qbUEdIXPfE2QYY6M9MOx3nuQTeo0vepKqqlbrW8RMmNYWRtZFti5zGNjDfF/2JaXMz3l5znovl2lb2SSNb3kdSfpcX8D5H2P2z2/8An9Pc9FDfXvxy/iRt39sIP8tPXvxy/iRt39sIP8tBMotK3xhBOt7y/BaescXXFIYCPc+WQ8/+eMe56Lmj0teoHwGTW15nEdRSSuD2Re2NhhEckZw33MrvbHeUO7sBQz178cv4kbd/bCD/AC09e/HL+JG3f2wg/wAtBMaDSl8p20Yl1xeak0/gfML44vb+SZDJuw3/AG29ofju5bcY6rih0pfKeOjbLrm9VBgFHzHPjizPyZJHSbsN/wBqHta7HkY3GDlQ/wBe/HL+JG3f2wg/y09e/HL+JG3f2wg/y0Etj0hfm0lPC7Xt8e+KmjhfKY4d0j21AlMh8X3TmAxHHTaTjr1X3PpO+yB4brq9R7g8DbHF03VYnB6t+tjHIH8g5911Ue4b8R9UXviNX6I1foeHTNwprUy5xmK7trWyROlMYB2saAcg+U9ytBBEKvSd9mbMI9dXqDmCYN2RxeJvqmzNIy36xgMI/kOOevVK7Sl8qH1rotc3qnFR4Zy2sZFiDntYI9uW/wCxLHFme8vdnPRSa61YoLZVVrmF4p4XyloOC7a0nH/BUtpTirxf1Ppyg1BZeDFDPbrhC2emkfqyJhcw9xLTFkILErtKXyokrHRa4vNOKjwvltZHFiHnRMZHty3/AGTmF7c+V5zkYXY/TF6dWyTjWd3bG+SoeIQyLa0SQMjY0eLnEbmmRv8AKec5GAoV69+OX8SNu/thB/lp69+OX8SNu/thB/loJlTaVvcRj364vM2x0RO6OLxtlK6BwOG/XPInP8sADp0XFFpS+Qcjma4vNRyzAXb44vbOXTOhcDhv173CZ38toxgZCh3r345fxI27+2EH+Wnr345fxI27+2EH+WgmVFpW9wNgEmuLzPy30DnF8cXtgp24lBw3unPV/mPucL5otKXyCOkbLrm9VBgFKJHPjizNyZnyP3Yb/tWuEbsfWsGMHKh/r345fxI27+2EH+Wnr345fxI27+2EH+WgmNFpS+QNphLri9VHKFMHl8cXtvKqXyvzhv8AtGOETsfWtGOuSuqwUV8teraOgq77ebrRttU7pZailj5L5TUtcwukaQRIGOLQwNwWjJORg43BXXlfru03ua7afFhuVlvE9pq6RtYKlokiaxxIeGtBHj47vIttLTxeyZTVfKbzW2eaMSepbiQDPGceF52tHT6TjLvdfWlBJkREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAUc4oNe/hpqdkbXOe6z1YaGjJJ5L8YUjWDqC5QWaw3C71TZHU9DTSVMojALi1jS4gAkdcA+VBFuAMckXA/REUrHMeywUTXNcMEEQt6EKb5C1OjL7San0ladR2+OeOkulHFWQMnAEjWSNDmhwBIzg9cE/CoXxWmt7dVWOHVdZPR6UfS1Zme2eSGF1YDFyWzPYQQNnOLQSAXDzhqCysjzpkedVAdeVdNeI7HQVbX/8AjVPBSxzRPdM+2ut/NEpL/GOZARzHdcjaeq6bNqPiDNSWiZ1bDW1E2lpL/NTR24MNRPiPl0jDk7G5cQT1cfOEFy9EVK6b1ZrG8Cz0UOo7XI2510cMtZSwMmlps0c80jHM2hjCHxsDQ7LgC4PycZz+Eeob3etZ+E3u8ct9bpqgqWW7kBjHyCSoZNIwHqMFrSR/LaD3NQW2TgKI8JNZ+vzR/q/6nep3+m1VLyedzfpMzot27aO/bnGOmcde9S7GQozwz0fRaH0x6g2+pqKmAVdRUh8+3dumldI4eKAMAuIHoQfIh/8Aeq+o5Y/1I1m/kVOfp7jjmZ5H/pxzPKTtwoT2nPpPDf8A3g2j/qkU2EY9lV8mBn1Ea3Oypz9Pd5f2v+Ae2+fxcKE9pz6Tw3/3g2j/AKpEFvBFxkAdVhUt5tNVcJ7fTXOinrKf6fTxztdJF/OaDlv4QgzkXG4ecLAqL3Z6atFFUXSjhqS6JgifM1ry6UuEYwT3uLH4Hl2nHcg2CLjc3GchfImiMvKEjOZt3bc9cZxnHmQQLtH/AFBdcfeOq/VlSPh7+4Ow/eym/VNUc7R/1BdcfeOq/VlSPh7+4Ow/eym/VNQb1VHev322nf6oV395iVuKo71++207/VCu/vMSC3FTsXEfUNPDf7TUw0s17q7jWwaXIjLY5mRzPicJAPLBs5jz0ywt8pKuCWSOKN0kr2sY0FznOOAAO8krX0FuszKP/Q6elNPO6ScOYAQ8zEue8H+UXEkjvygr/TvEuumtNtmqbSKqCNlqprnWicRPFVWxxFpjh2ncwGaPcdwI3HaHbStPY+J19it9vu9+t+X1FtqpYKajq2GKokFdDTRh+6MFhBlYA4OLdpeSM4xZDNFaTZcaK4MslG2ooY4o6dwacMEQIi6dxLASGkgluehC+YdD6Qip5qZliouTOyeN8bmEtLJntfK0A9AHOY12BgZAIwgjFXxLusFwmsrdLwSXmmlqo6iL1TxA3kU8NQHNk5eXB7J2AZYCHZBwOqnmnLnFerBb7xBG+OGupYqmNr/dNbIwOAPpwVr7fo/TFAyJtJaaZhi52HEFzyZg0SlziSXFwa0Ekk4A8y29upaS30NPQUUTIKanibFDGwYaxjRhrR6AAAgpbtO/u14P/wBdab/krxHcqO7Tv7teD/8AXWm/5K8R3IB9yVUnBj6sPF/79Uf9zYrbPuSqk4MfVh4v/fqj/ubEFt5RVxxWkpfXLYoNS1M1NpV9PVGd4qHwQPrAY+QyeRmNrNvOIydpcBnJDQoxZNZXRtpra6mnqbRYLTZIp44OQ64TSPknqYQ8TSlpfGBEx7SceKQXENygu7I86ZHnXnfUOutQ3PRdztdwvEdBC6jvcMdb4IyR9xfCGNhhGzxNzmSudmP3e3LcYKzJNVX+zNmpLe632ammrphLcahgYwyx0FG6Jj3PBaS8vfk4BcItrcOQX5kIqbrNS64kq6g+qEEcb7u6ztpqai3NbvtgnEzJD4ziJujcgAg4Iz1E34OVktfwv09V1F1N0nkoIedUEAOMmwBzXY+ua7LT5cg56oIdQ/vw7n/UWm/v0it5VDQ/vw7n/UWm/v0it5Bq9XfuVu39Cn/VuUM7MP73/RP3oh/xUz1d+5W7f0Kf9W5Qzsw/vf8ARP3oh/xQWOhIHeiivFmruNFoC41FslqoZQYWyzUzC+aCB0rGzysABO5kRkcMAnIz5EEqCZHnVW6Q1BpOzVd+9QInzUbBTspaiK6zVcdxqHsleIWbyQJvEwcEl25mTnosLg/c7hqbXlRfqy6C4Nj07SHfFTcqnilqJpJJIYz9eGCNjSTkg5B65AC30PcUQ9xQVD2av29xU/3gXH9XCptLD/70Kao5YOLLMzfyajPWeM45meQO73JHMPeDtDlCezV+3uKn+8C4/q4VNZWD2UKaQgdLLM3Oypz9Pj8o/wBH/AfbPsfF3IJSiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIC1mrbW696Vu1lZMIHV9FNSiQt3Bhkjczdjy4znC2a0XEOsqbdoHUNwopnQ1VNa6maGRvex7YnlpGfMQCg+eHGn36V0BYNMyVTap9qt0FG6drNokMbA3cBk4zjOFu55IoInzSu2sY0ucfMAMkqLcF7nX3rhFpG73SpfVV1bZaSoqJngZkkfE0uccdMknKkl0hdUW2pgjxvkiexuT0yWkBB1W252642yluVFVMmpKyBlRBJkgPjc0Oa7BwcYIPXzrJ5sPiDe3x/ceN7ry9POqUtfCS5CC2m501pqJqUWGNznPL/aqWIMqmAlvuX9Rt7njvX07hzqhgstFDSWVkFrrW1FLUsc0TU8bbm+flBzoy4M8HLGtbGWjO5riW4QXRzoNsh5jMR+7O73Pl6+b8K7GbSNzTkHqDnvXmrS+jr1dxWxw2SeGqbPDVTGZvIZNFHVTPFJMZYcOmPMDy485ruU0EgYJvjh9Z32LSVDbHxPhMQeTE6oE3L3Pc7aHhjBgZwAGgAdB0AQb4934VWHZiutyvHC0Vt2uFXX1Ju1xjM1RK6R+1tXI1rcnJwAAAPIBhWge5UpZOHehuIbKzVdl1RreCmrK6oDoqW9T0kTJWSOZIGRDAaNzSgsQT03spPgzB4T6itdjw6bmbOe4fSMcoNz/tM78+LjaFXPH+9Wm+W7h1VWe40tdBHxGtcL3wSB4ZIx8rXMOO5wIIIPULpbwg0769Tp31360y23trv3Y1PhHWUs+lbcbOnu92c9MeVVZd+A9Pwtu+j9Qy6iuFyuFz4h21hh5h5DInTSOaXZ6yy4A8d2O92B1yQ9e3WGoqLZVQUk/g9RJC9kUuM8t5aQHfgOD+BUYaLVVDo6lsOm9HVNqutDYZqarrGULROyrDWASU9VuxJzHguPQk+6dg9FfgXBa37EIKe1JS63pNXw0uloL7y6M8hlTWV0s8FTG6kmIe4Odyxicxg5DpMtz4rOh1OnrTq4XVtyoaHUkMk5skdRLd5HPke+LwvwjOXEiMOewkDDevijGFYtl1m+5z1VwjsczNNwOqGeqzqhnjmBzmvcIR4+wua5rSMk4ztAIJ6qjiPp+K5UjWzsZbX0tdPV1M7XwOpHUroA5j4ntDg488dCAe7AO4IILpq269ntluirrhqkTyVtuZd45GyQ7SDJ4S+OUyuyx3ig8rawANLcEnGy4e2bUVJxDttwv8N9lxaquhjqJpnvYOXXTGLnYdgudAYyHOB3Hr7pWnZ7jR3ahZW0QlMLyQObA+F4IOCCx4DgcjygLM2tznAyggHaP+oLrj7x1X6sqR8PTjQlh7/9WU3k/wDumqOdo/6guuPvHVfqyofo7gdYK3SVnrH6r16x01BTyObHqWoaxpMbThoB6Dr0HkQXNdbjRWq2VNzuVTHS0dLE6aeeU7WRsaMuc4+QAdSVU9dU09Z2rNMVVJPFUU8ujq18csTw5j2mpiwQR0I9IWFqzs72q46Xulvt+r9aCrqaSSKA1uoaiWDe5pA5jPr2Z72+UdFEuEXDCi4VdoHTenqO8XC6F2lK6aaWpfhgeamLPKj7o2+XAzk9SSgu3i1TXm5aT9Q7JSCea6VEdJUOe8tjipid0xeQCQ0xtczoCcyBQawUGq7TU2ex3i3Xtlktb6qmgbZJ37HEyxPpC5wLXmFkLnxeNhodGdw6tVh8QdTetm30EzYKaaavuEVBCamp5EDJJN20yP2uIGW4GASS5o8uV83/AFR6haKOo7nbXs5HJNdTRzNkdTBz2tkJcOjhGHFx84aUEDtEurqKjttZWUmrJrnTXljr8NzpIJ4T4Q3/AEdm7aYgXQuwwDxQ0kFwKx7PT69Fsq7pdqfVNTNS2PNPQMr+S6SpfVVYdktJ3PbCYcd+BtwC4DEtn4l2ttffKCG31MlRbLlSW6MEtYKt88gj3Rk/WseJGuJ7uU5Zo1/YKsUgtFZS1Imq6eFxnMkAMUxfslj3M9sadjtpHiuwfG6IILp+LWUVyo2X6HVc1kirK1tK2jmmE2TJA6ndMXP5pi2GYDmOOOoePc4knCQ6gqbte23e5VFXSWWofZ6SR024VZZIZHTv87w18URz1DopPOu+4cU9MsdbTbpJK6OqroaaYsppg6NksMssUjGbN0ofyvF2g7g7IJHfs9N6509edR+olnkknMluiucdRHA8QyRyvkA8bGAcxnOcHJx3ggBXfad/drwf/rrTf8leAIx5fxKgu13bYrxe+FdqnnqoIqvV0MD5aaYxSsDm4JY8dWuGehHcpEOAmncfuu4g/wBp6j5UFm3i82q0NpvVS4U1EKucU1OZ5AwSSkEhgJ6biGnA8uFWfBj6sPF/79Uf9zYorxK7MNs1PaaK3UWs9UxsZWslqXXK6S1zeUGuBDI3nbzCSMOPcM9/ctp2aLDTaY11xP0/R1VdVU9DdKKGOWtnM0zwKNnVzz3n/gBgDoEFv3O+Wi3Xa2Wqvro4K26PkjoYnZzO5jN7mg92Q0E4PfhfFNf7LU3y4WSCvhkuFthimrIATmBku7llx7hkNccZzjr5Qo9xH0dPqm8WeRszaeKiiqi2cOPNp53CMwSsHlLXsz3+jqCVEq/hjeYZJ6hk1HeJp/AKq5tqDym3WeKonlnY8YcGRkSR7GncAImtPQZQW9zIMNO8Ydjad3fnuwuObAIxJzW7CcB27oTnGM/CqRruE16rrTWxy01qjkkttbHb6cTuLLdLNWCaJkbto2hjBje0DBJDQBhZGpeFtzkuNU63UVFJZjcKqWC0wzx08bWT01OzmND4nsa5r45ugbkCUuac5BC5nzU8e7fI1uGlxy7uA7z8AXxa62kuVup7hQTtqKWpjbLDK09HscMgj4QQqtbwyqfVJ1a+ChknffBM+pmkMszqE20Uzo3PLcuy8ZLTgO90evRTPhRZqnT3DyzWOtt1HQVNDSsp5Y6V4fG5zAGmQENb7sjd1GevXKCCxTwUva7vFRUzRwwxaDp3ySSODWsaK2TJJPQBWvaLlQXe2U9ztlXFWUVVGJYJ4XbmSMPc5pHeD515x4x8NKLin2jLxpmuu9wtY9ZVLNFNSv8AF3itkwJGd0jOudpx1wQQVKNHdnW1WvStsttx1frM1dNTMimNDqCohp9wGDy4/rG+ZvkQWbq69WnwO7WE3CmbdfUqapFGZAJjCWvbzA09S3LSMjzKOdmH97/on70Q/wCKq/W3Zjts2qzqp2sNSmgtlqk5cc1xkmq3zgSO6Tv6xx4LfFb1OXdRlWh2Yf3v+ifvRD/igsdR+4ay05Q6gbYauvdHXOfDGR4PIY2vmJETXShuxrnlpDQXAnyd4UgVUaj0BqCt1tcdQ0lwYxtRcYXR0z5iYhFHSBkVQWY6yxT5ka0nBA8jtpaFnTeBSgSTcl4p37suIPLcBjPoOD/xXNVU01JSTVdRK2KCCN0kkjj0Y1oJJPwAZVA1ukbnp7StPR1lklFxnfEX1Qf4dSyyU8Mm3wiKOn8cPfK4ty1z3OGXOBa0GeWOw3ebQWn9JGyx220+D0La0PqQ6URiMvniewAeM6RrYyQTkPeemOoWFbauKvt1NXQiRsVRE2VgkYWuAcARkHqDg9xWQe4oOgQ9xQVD2av29xU/3gXH9XCptLPTDihTU7jT+EmyzPANdNzNgnjBxBjlFuSMyE7wcNAwSoT2av29xU/3gXH9XCptLUtHE+mpPDQHGyzSeDeqDhkCeMb/AAbbtdjOObuy3O3ad2QEoREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBYd99T/USu9VuR6neDyeF876Xytp37s/W7c59CzFpNfUFVdNC3+2UMfNqqu2VMEDNwbue+JzWjJ6DqR1KDI0l6i+te2etzwX1G8Ej8A8FxyeRtHL2Y+t24x6Fsj5PhUW4O2i4WDhRpSx3aDwe4W+z0tNUxb2u2SMia1zctJBwQeoJClWEFLDjJcBwtmu5s9L67Ax0jLdzHcl0Ox0wqc+65PJaXE/Zgs78KT1vFrTdHcrpRyQ1kjba2q5ssQjdukpojLMwM37xhrXAOc0NLmkA92d2NBaXFl9Sxa4+X6mOtXOz7f4K45MXM91jPXv7+q+KnQVjnlu2ZLiymu8czKyjjrZG08jpmbJH8sHAc4eUeXxu/qg1tv4m0FRfYbTUWG80L31sdDJLO2Ishmli5sLXbZHE72YOWghpIDsFTwHIyo5JomwPr3VzqeXnuraeuLuc76dBFyozjzBo7u4963Vqo2W+201DHNUTMp4mxtkqJXSyOAGMue7q53nJ6lBkkdFAeAulLpo3h+LLePB/Chca2o9pk3t2S1D5GdcDrtcMqfHoFAuA2rLprPQPq3eG07ao3Gtp8QMLG7Iqh8behJ67WjPpQbYVP/vUfSeG91kbJ4N6pd3t7hv8G2dPNzd3X3O3plQjtOfSeG/+8G0f9UinYq5/ZKfQeEz8gWhsvJ8Ip+Xu5zhu5f0/djpu+l46e6yoJ2nPpPDf/eDaP+qRBbwRAiCBx6BudJRXK02rWNwt1nqvCX09PDTx82lkmcXnbN7rY17nODehGcbsAY1R4OUEkNSJLzUMlnfVTB0MDWiKWY0rg5ocXdGOpGEBxdncQSVaKINRZKC9U07ZLnfRXjkFj2No2wtMm8neMEkDaQ3bk92c5K26Igr/ALR/1BdcfeOq/VlSPh7+4Ow/eym/VNUc7R/1BdcfeOq/VlSPh7+4Ow/eym/VNQb1VHev322nf6oV395iVuKo71++207/AFQrv7zEgmHEHRjNVPoJxWx08tG2ePl1FIypgmimZska+N2MnAGCCMdR1BIXXpfQdJZtCV+j6i41V1oqzntfNVgOne2YHeJHj3ZyXYcRnGB1xlTBaLiFeKrT+hL7fKGnbUVNBb5qmKNwJaXMYSM4646ZPoBQRe3cJrRTP0u+W41tU6xUs8ExkIzcHyh2ZZf5Qe+V4x3GQrptPCyK1WykpaevpJH22alko3tt0cL3tpw/lxzPZ1kzuGTgdxIGSc/dxvFz0lp5tS3VEep66uaySnjrQ1u4CN8j3QtpYi9zXBuQCCGgE7unXS6e4iXm5X+WO2U8U0t7npZKCGvqSyCkiNsiqZGlzWkkku6ADqS53cOoffC/hzerbHbo71JHTxWqppaqDqyWeaaOnmgeHSNAHJDZG7BjcNp7gcKU6K0D61rrBV0d5lmhbbhQzwyQN9t2zzTRvDgctIM7wR1yMd2Osyp5OZGCSzcBhwY7cAfKMrsQUd2nf3a8H/6603/JXiO5Ud2nf3a8H/6603/JXiO5APuSqk4MfVh4v/fqj/ubFbZ9yVUnBj6sPF/79Uf9zYgttRnXd9uFqNnt1nhpX3O814o6eSq3GGECKSV8jg0guwyJ2GgjJI6gZKky1OqdPW7UdAykuInHKmbPBNBM6KWCVudsjHtwWuGSPSCQcgkINFXavm07NZbdqanjlqrhUR0xq6JzGQcySXlxgRySc05Lm52h4bu6nHVa/hnr2p1BR2+lnttTV1zqdk1wqadsbKem5j5BGCHP3ElseSGh2MgnGVsvY3086vpq6aS6VFRD4OXPnuEshmdBOZ4nPJOXFsjicd3XBGAMdtq4fWC01cFRa3XGidFTinc2Ctka2ZjS8s5gB8YtMj8E9eoHUAYCWdCix7bStoaCCjZLPK2CJsYfNIZJHBoAy5x6uccdSepPVZCCoaH9+Hc/6i039+kVvKoaH9+Hc/6i039+kVvINXq79yt2/oU/6tyhnZh/e/6J+9EP+Kmerv3K3b+hT/q3KGdmH97/AKJ+9EP+KCxz3Kn2cXawaPvc0tpg9cdPNUttdC152VsTXzNimz3hoEEnM+x5bvO1XARlRyPRGmmULaX1MidshqoI5n+NLHHUuLpmtefGAcT5D5B5kEdouLNjdXRW6eCodUtijFRJFsLGTuphUcsNL+ZjYR4+3aCQCcr6tnFa21k9Ox2n75TQzGhLp5WQ7ImVh20z3YkJw92WkAEtx4wAwTuYNBWSCrlmppblBFPCIqiljrpGwT4hEIe9mcF3LDRny7Wk5IBX1DoPTkUbY2U021rLewZncelE/fT+XyHv+y8qCUIe4rFtNEy3UEdHHPVTtYXYkqZnSyHLierndT34HmGAso9xQVD2av29xU/3gXH9XCptLUY4n01L4ZjdZZpPBhccZxPGN/g23xsZxzd3i527TuyIT2av29xU/wB4Fx/VwqdSVcw4jU9CKibkm0TSmHwinEZcJowHcv6eXAEjcPawCQfGLUEkREQEREBERAREQEREBERAUd0/qYXPU+qLM6kEDbDUwQmbmZ5wkp2TbsY8XG/Hee7PoW9fU07HmN88TX4B2l4BwTgHHw9PhUAZprWlBrzUt0s1dZI7bf5oZXyTMldU0zmUzYctbjY7qwOAJx5Cg2tu4laOrqplNDdHxzSTwQRsnpJoS905eIS3ewZY8sc1rx4pIxnJC7K/iHpSiklikuMkskU08L46akmne10G3nHbGwnYwuaHP9yCcZz0VY3nhvqKjsN+vN4r33O7Safho6VlLPUVE8lfBPz4Z2mY4BM212xoa1uPKOq2lTwmrI4rFX2+a1XG5UdtloLiy4PmbFPLLLz5ZmuiIc13OMhLSCCHY6EAoLBoNdaXr9Rs0/QXRtZcXwsnEcEUkjWxvj5jHue1pY1rm9WkkA9wyei1OstZ3zT9zMx0wySww1dHSS1klaGTzPqJGsBghDTvDC9oO5zSTu2g4693D/Rz9L3q81u+hZTVtPQQwwUsTo2QCmg5RaAScNz1aMnA7+q0+orHrO68Q6G909XpitstHsktdHVPnBjcRiSowzLZJMOIYT0YD06uJQWYFH9SakNn1Npiz+B871drZqXm8zbyeXTSzbsY8bPL246d+fJhSAKF8SdO3+7XXTN405PbGVljr5anl14k5crX08sJGWdQRzM/gQbK66009a7/AAWOurJYqyeSKJn+iymISSZ5bHShuxrnkENaXAk9B3jPQ/iFo9lqorq6+U7aKuo5a2nlLXAOhj2h7yMZbgvY3Bwdzg0AnoobqXQetdRXiKsu99oG08dZbq5kMU9S2KmdTvjfLEyIEMeHuY5wkkBcN2MdARqaTha6/R69pZJpKKnq68MsLKiHLaeFtQ2skcGgguhlq957wSxowR0QWFVcStH0ludXVtympGsq20boaiinjqBO6MyMjMJZzNzmAlo2+N5MlZOt9VSWDRNTqK32WuvEjKfnQ0sQ5TneIX5eX45TQBlxcMjuwTgGJWrhxcRVWmuqqbT9vqaO/Q3KcUInk50cdNNEGufKclwM2R0AA6dT1U215QXW6aQuVrs5ohV1lO+nDqsvEbWvaWuPignIByAgzNMXP1Z03bLvyuT4dSRVPL3btm9gdjPTOMrYqPaCorjZNF2y13qSh8IoKWOmfJTOdy3NjaGtd44BBIAJHkJ8q37HteXNDgS3vAPUfCg+kREBERAREQEREBERARfBljDXnmMxH7s7vc9M9fN06r7HVAQ9ASiHqCEEW0rrGC70Goa6rpxQwWS6VdDI8yF4c2DGZOgyMg5x17vKuLPxB0rdayCipbjIyqqKk0scFRSzQSc3kmYNLZGgt3RgvaTgOAOM4KitFo/iDbBqy3We8WSio71XV1dS1oZK6qpZJx4nikbDhwGTnuOR1CjuoeGupKKwalulNUOm1Fcam1zWk00s9U+iqoHGMSOlnJc9gbI4uJwAzcMecLGn4maMhjbIbxzIi18j5IqaaRkMbJXROlkc1pEcfMY9oe7DTtJBIBK2Nt1jp+5amrNOUFa6pudFuFVFHBIWwkBp2vft2NcQ9pAJyRkjOCq8u/B0QXFjrHBZqygltFNap6a7CfDGQB7WvbynDfubI7cx2MnruGTmeaG03Lp+t1LLJLC+O7Xc10LY2kcpnIhiDD5yOUT06YIQR88R6wXXwn1Bj9bPq76g+qHhnt/hHM5XM5W3HJ53tWd+7PjbcKxlWB4e3w3I2n1St/rUOoPV/Zyn+F8zneEcjPuNnP8AH39+3xcfXKzwgIiZQEXVFUQSlgjlY/ezmNwc5b5x6OoXagIiICIiAiIgIiICIviSVkbd0j2tbkDJOOpOB/xIQfaIiAiIgLA1JW1Nt09crjR0jq2ppaSWaGnbnMz2sLmsGATkkAd3lWeiCu+EHFGm17Tw08livdoujKFlRWQ1lulihjecBzGSPaA/Dj5O8DKax4u6e0vqOpsdfadUVFRT7C6Sisc9RCdzQ4YewYPQ9fMchWGAB5/xpgen8aDQWrVdFcdFeuyGmuTKLwaSp5M1G9lTtZuyOUfG3HacDvPTzqLaX4y6c1Df6OzUdo1ZBPVv2MfV2GeGJpwT4z3DDR08qsjaEwPT+NBDuIfES0aJqKOG6W++1Zq2PfGbda5asNDSAdxYDtPXpnv6rK4e63tmtaKqrLZRXeljppRE9txt8lK8kjOWh4BI9Kk5A9P41yBhBV1z446WoLrVW6ayaxfLTTvge6LT1S9hc1xaS1wGHDI6Ed4U60hpuy6WswtVgo/A6LnS1HL5j3+PK8vecuJPVzicZwO4LbYHp/GuUEZB/wDei9uTj1Fae+lx9Pd5P2x+P2rzeNlQXtTGeHT+jbrFQV9bDadZ22vq2UdM+eRkMZkLnbGgk+T8JCnwpJ/ZJfW+Dz+D+pDYudyafl7+cTt3/T92Ou36Xjr7rKkWAgqQcftJfcHW/wDZmq+ans/6S+4Ot/7M1XzVbW0en8abR6fxoKl9n/SX3B1v/Zmq+aumDtFaHnqqilhtWsZJ6YtE8TNO1BdEXDLQ4AZbkdRnvCt97TsdsOHY6E5IyvNPZ50XqCz9pPiXW1etZ7iaSamjuTJKTa2vNRDzmO92eWYj4rcbvFyOmUE99n/SX3B1v/Zmq+ans/6S+4Ot/wCzNV81W1tHp/Gm0en8aDzzxi4w2HU/CrVGnrVp/Wj6642uemp2v05UtaXuYQASW9Fd2hIZafRVkgnjfFLHb6dj2PGHNcImggjyEFbjA9P41yOiAqM4p3xukO0Vp7U9wtN7qrWNNVdIZbfbparbK6oY4NIYDjo0lXmuMD0/jQVL7P2kvuDrf+zNV81cO4+6Qc0tdYNblpGCDpmq6/8Ayq29o9P402j0/jQUFT8QuD0FOaaDhtfY4nTCYxs0ZMAXgEA4DPMSPgJHlSLi7wdvdnDIdF3y4W6SRjhy9KSyROdE3lNwQ0jLWjZ6ANvd0V+kD09/nVRdjsZ4AWXv/blx8v8A+OmQdFv43aDt4mFDpXWFMJ5TNLytLVLd8hABccN6kgDr6Asr2f8ASX3B1v8A2Zqvmq2to9P402j0/jQeZuJmtqXiLxA4X02nbBqndbdV09XVPq7JPAyOIdC4uc3GB5fQvTTeoXG0en8a5QD3FeerHrii0Bxi4mi+2PU8jLndKWeklorNPURyMbSsaSHMbjv6L0KuNo9P40FS+z/pL7g63/szVfNT2f8ASX3B1v8A2Zqvmq2to9P402j0/jQU/XdorRFDRy1lbatY0tNE3dJLNp2oYxg7slxGAPhXcOP+kSMiw63/ALNVXzVoe3RablX8ArpV0t5fRUVvkiqKulbFu8NBlYxjC7cNrWl+/uOS1vdhWbwhtNysvDaxWu63l95qKejjYKx8XLe9mMsDhuOS1pDc564ygiHs/wCkvuDrf+zNV81PZ/0l9wdb/wBmar5qtraPT+NNo9P40FF8M763WXaWu+qbbaL5S2tmkoKHnXC2y0uZhVueWjeBno7P4/Mr1QADz/jRBrtTxSTabucMTHSSPpJmta0ZLiWOAAHnVC8E+Ltj0pwm01py76e1oy4W+3xwVDY9O1L2te3OQCG9V6LXGB6fxoKl9n/SX3B1v/Zmq+ans/6S+4Ot/wCzNV81W1tHp/Gm0en8aCnp+0VoenqKenntesYpqlxZBG/TtQ10rgMkNBGXEDqceRd/s/6S+4Ot/wCzNV81QPtJaK1BfePXDaspNa1NrFRWSwW6OOk3ihkhiMzpfdjmF5aGkHHigDqvSVOH8sc1wc/A3FoIGfLgZ6BBVPs/6S+4Ot/7M1XzU9n7SWP9Q63/ALM1XzVbW0en8abR6fxoKe7LTp6qg19eZLfcKGmu2s62uo21tK+CR8L44drtrwCO4j4QVO5ifZMpm9ceo0x76bH0+PyH/SPxe1/ZeNtUnAAUckpJzxEp64U8xgbaZYjNyaflhxmjIbvPt4cQCdo9rIBJ8YNQSNEPQZUNrOJFhgvVRbaekvdxbR1Hg1bV0FrmqKaml6ZY+RgI3DI3BudufGwgmSLofWUrHOa6oiDmNLnAvAIaDgk9e4eUrg11GKZlSamEQPxskMg2uycDBzg5QZCKK6K1rTappqKqorVc4aWrojVsqZmMEbcSmMxkhxO/xd2MYx5c9FImV1I+nFQyphdCc4kEgLTjOeucdMH8SDIRaqr1FaKW6Wy2zVjPCLoJHUYb1EgjaHOII6YwR+NbUdRlAREQEREFf8UbJcr4yoprXeKG2zGkaCXHbLL7b0a53exmcYLeu7ot1QWa/wAVFDE/U87XMja0gUkLgCBjvI6rm/1NNTXVxqJ7LCHUzNpq5A2U4mBPefc+b+Ut5RVtHWNc6jqoKhrThxikDwD6cFd51LxpxGOH0cIpXbmc8fqj9xtN72w79Tk+3x45tHCADu6EdPdeb0r6oLTexHLjU7gOc/PLo4SM7j39Pdef0rc3d7I4YpJHUzWMnYXOnOGgZ7wfsvMsW3Xi0EOiF0tZe+Z21sVQwl2XHHTPVx8vpWYvaY4R6R+mtmsTxn1lGNT6U1ZX3OgqKLWM1LHTsl5shgY04cBhoa0AOBx9d3eRYugtNX622W2UsmpoNwjmdG+GNk2WOc0gsc8ZLSMZ83i46KxJvpL+g7j7ru7vKo7b7rbII7VHLcbDC+Ok2yNiqGAMO1nSPr0Z0/EGrpXX1LU2IiO0ebE6VIttTPrLI9Sr776aj4lD8iepV999NR8Sh+RZvq9Y/uxbvjTPlXZTXa1VMwhprlRTSu9yyOdjnH8AOVy2r8vSP03inP192rntN85EmdUTEbTndRQ47vL07li0FpvXObs1M0HwWMe10cJOMnAHT3Hm/CpPP1p5PcnxT7ru7vL6FpqK9WdkzS+6WduKaNp2VLM5BOR3+5834Va3tMcI9I/SzWseM+suPUq+++mo+JQ/InqVfffTUfEofkWZ6vWP7sW340z5V30Vyt1ZIY6Oupah4GS2KZryB58AqTa8eMenskVrz9fdB7hpTVXq/XXN2ruXQyUjYuXJCwtkcM9XMxsaBkdR1KzdC6e1BaoblBcdSmrqH1rpTMI2vc9pa3Bdu6tPT3I6AYwpZdy1tsqHuNOGtYSTOcRgfyvQsCnvdmbVVTnXa0tDnNwW1TNx8Ue669/+C3vtS1dnEdoZ3VK2zn1l2+A3P7ty/Fo/kTwG5/duX4tH8i+/V6x/di3fGmfKnq9Y/uxbvjTPlXP4+Xo6Zpz9Xx4Dc/u3L8Wj+RPAbn925fi0fyL79XrH92Ld8aZ8qer1j+7Fu+NM+VPj5ehmnP1fHgNz+7cvxaP5F8+A3YOJF8eQe4Glj6Lt9XrH92Ld8aZ8qer1j+7Fu+NM+VPj5ehmnP1dfgV2+7R+KsTwK7fdo/FWLs9XrH92Ld8aZ8qer1j+7Fu+NM+VPj5eh8HP1dfgV2+7R+KsTwK7fdo/FGL79XrH92Ld8aZ8qz4ZI5oxJE9r2OGWuacgjzgpM2jxj0Iis+E+qOyUNx8HugN4pMZO8OpmbXe1t+mdenT/AOXCzxRXbH+uj8UYumur6Gl9VIqmrtUMknuGTStbu9qaPbAT/wD4MLKF+seP9cW740z5Vfjnwj0SNmPn6vkUV3Bz6tZ9BpGfKufBLv8AddvxRvyr69XrH92bd8aZ8qer1j+7Nu+NM+VT4+Xoua8/V8+CXf7rt+KN+VPBLt912/FG/Kvr1esf3Zt3xpnyp6vWP7s2740z5U+Pl6Hw8/V8+CXf7rt+KN+VPBLv912/FG/Kvr1esf3Zt3xpnyp6vWP7s2740z5U+Pl6Hw8/V8+CXf7rt+KN+VcOpLxjxbwwH00bT/8AUvv1esf3Zt3xpnyp6vWP7s2740z5U+Pl6Hw8/V8eCXr7rwfEh89cGlvWP9bw/Eh89ZVHdLdWSmKkuFJUPAztima848+AVlHuUzMeJiJRy3U90c6l2XmgJNIC3l0IGW5HVvje59HwLYeCXr7rwfEh89c2uUPfSDnU791GHeJGRu6t8Zvmb6PSFtEm0rFYarwS9fdeD4kPnp4JevuvB8SHz1tUU2pNlqTSXvBxeIAfJmiHz19Npr0G+NdaUnz+Bf8AetoibUmzDWeD3n7qU3xI/PTwe8/dSm+JH562aJtSuzDWeD3n7qU3xI/PTwe8/dSm+JH562aJtSbMNZ4NefupTfEj89RintmsYNX3Ctrr1R+oUkkOyCWHdvd4gywZPL6+k5PXHlU6WLc3BlJu3xs9sjGXtyOr2jHw+b04W6ak1zHDj5MWpE8eTJb3LlcM7lyuUOgiIqCIo/xLnmpuHOpammmkhnitNW+OSNxa5jhC8ggjqCCM5QQyl4uXaa5RUbuEHEWFkk7YjUSUEIjYC7bvJ5mdo7847lLuIOqarStrp62k0pf9SPmn5Rp7RAySSMbSd7g5zQG9MZz3kLA4FVNTXcF9F1tdUTVVVPYqOSaaZ5e+R5haS5zj1JJ6klTQgHvCCF8PddVuqqurgq9Car00KeNr2yXimjiZMSSNrC17skd59C1mreJ9zsWoau00/C7Xd5ipy0NrbfRRPp5stDssc6QE4zg9O8FWN4o8yYB64CDTG+zjRXriFiupn8B8L9ShG3wzds3cnbnHM+txnGfKolpHidc79qKktNRwu13ZY6guDq64UUTKeHDS7xy2QkZxgdO8hWP07kwPMEEK4g67rtK1tLTUug9V6kFRGXmW0U0cjIiDja8ue3BPf8C2PDbV1PrbScGoKe13K1tlklidS3CIRzxujeWODgCR3t6dVIzjyhR3hxrC363016u2ynqqen8KqKbZUBofuhldG4+KSMEtJHXu8yDrFM72U31fgXimytj8J9TR19vcdnhO7J8/K29M7t3XCx+K2vqHh/Y6K5Vlrud1krrjDbaWkt8bXzSzy7trQHOaPrT5fMsgUzfZTfV+BeMbK2Lwn1NPX29x2eE78Hz8rbke63dcKEdpz6Rw3/3g2j/qkQfXszXn+JXib+j4P81PZmvP8SvE39Hwf5qtsAeYJgeYIKk9mW84+orxN/R8H+aoPofWeqLFxN19qip4PcQ5KXUlRQy0scdBFzIxBT8p2/MgAJPUYJ6eZek8N8wTA8wQVJ7M15/iV4m/o+D/ADU9ma8/xK8Tf0fB/mq28N8wTA8wQU1d+O9VaLVVXS6cIOI9HQ0kTpqieWhgayNjRkuJ5vcArcs9fDdLVSXKnDxDVQMmjDxh217Q4Z9OCFCe0eAOAuuOg/1HVfqypHw9/cHYfvZTfqmoN6iIgIiIOD3fhVRdjv6gFl/plx/v0yt0934VUXY7+oBZf6Zcf79Mgt5ERAREQPIqpvfGhtHrG96atPD3WmoZrLNHBV1FspYpImvfGJAMmQHucO8K1j7kqo+DIB4w8X8/dqi/ubED2Zrz/ErxN/R8H+anszXn+JXib+j4P81W3geYJgeYIPNfHvWeqeIHCO+6PtXB7iHTVlxZE2KWpoIhG3ZMx53bZCe5p7gpfZ+Ll7orTR0cnBfiW58EEcbi23w4Ja0A49t7uiuXA8wTA8wQVJ7M15/iV4m/o+D/ADU9ma8/xK8Tf0fB/mq28DzBMDzBBXfDrirT6t1hW6UqdJal03daWgbX8q7wRxl8LpOWHN2vd9cPL5irFVQ0H78O5/1Fpv77IreQdFfVRUVDPWTbuVBG6R+0ZOGgk4/EqfsvHmovVpprraeEPEetoaqMSwTw0MDmSMPc4Hm9ytPV37lbt/Qpv1blC+zCB+x/0T0H+qIf8UGr9ma8/wASvE39Hwf5qezNef4leJv6Pg/zVbeG+YJhvmCDxjxtsty4h8UtOasj4WcUKGkp3ht5gFIxrqiNvuTFiXDXkZY49PFwe8dbwg4w3WGJsUXBPiYxjGhrWi3QYAHQD6arew3zBMN8wQVJ7M15/iV4m/o+D/NT2Zrz/ErxN/R8H+arbwPMEIGD0CCH8KOIFDxBtFxrqS03S0y224y26rpLjG1k0U0YaXAhrnDuePL51ky07vZPpqvwLLW2aaPwn1OBwTPGdnhO7Lc4zytpDsbtw24MJ7NX7e4qf7wLj+rhU2lpgeJ1NV+B5c2zTR+E+pxOAZ4zs8J3YbnGeVty7G7cNuCEnPcVSctHxA0xo+6aP05Z7ubn6pVdXaLzRGlfTzNnnfMBU845ZtMha/DSSGgtPXCu09yhMnE/SsWnbXfaieogprndvUiFskOJGVIlfE5r258UNdG7J7gOqCEz6Nr7fZtaXJmiqC6XW66lkeDU08dRI+3ukiO9rHOaHhu0vERc0FwyQT36TTGjNQWyttM1+0VUXmyU12u7o7W2OlxB4SYHU8/I5nKa0ATtIBOwyHp1JV0RausZu96ts1U2mNmMDKyeoIjha+Zm9rA9xwXbdpI8m5vnWQb3E28zUUlM6OkioW1hr3SxiAgucNvutwIDd24jbg9+chB5/o+Gut/WVT2yO0SUc8ek46GSJtTEMubchNJSh2S3L4Q5oJGzxsHplSCh4furZ7NIzTd4bb36ohra+iusFFDE2KOiqIzI2Cn8QAudG12QS4gHGBlWdd9dWK33WyUhqoJqe7uqAysjqIzBCIojKS92cYI7vhWfLqmxRajoLA64QeHV9K+rpmCRuHxtcxuQc9cl4xjvwcdyCnLVoCutmr9OV1VottbbbZf70yCKOKB/glNUSh9LI1rnDbE0hzgB1bno1X6O5Bg92EQEREBERBXusKa3zcS6FtdBbpxJZ5gBVxCRrNs8ZyQR5nOAPnKzdPUdHaeJl6oqGjgpYKi20tQ2OGMMblr5GE4AxnuWt4gT8jiNpp/OoGNMc8Tuawlw3joXeQsy3AH2WFuqr2jizQvPQVVmnj+ExzMcP+DivbOd3Ec6z6T7PHw258phmcQafwvSdwpfaTzoXMAlGcktdgD+VnuUIuFqs0nBb1apbXa21cdJFUsngpWNe0scxxy4DO7oc/hVk3drXQxse+FrXzMaeYM5ycYH8rzFQfSsDqvgRNRS7d/qfV0+GtxjaZGjPp6DPpWdC01rH/2j8/prWrm0/SU/le2SlL2kbXMyCe7BCrPQFos81/udDWW+xVh3x1LXCla4PZJTxEGLI6MDg448xCnmmqnwrSFtqyWky0EUhPkyYwVFNN5j4iUMrX0ZjuGm4pMwMwxzo3AZj8rW4f3ebHmWdLNYvWP7iV1MWmsylfrV0x73LP8AEo/mqN66s9ns7bNd7faaGjko7vTGSSCmYx3Le4xuBIA6eOp4FGeKNO+p4f3lsf0yOmM7MfZRkPH/ABas6N7TeImeDerSNicQkM2BA/JaAGn3Xd3Hv9CrnhTYbHPZpqSstFmqZqKeaB7nUjHPdiV5Dske5LS3HwKfQVLKqzMrGFuyanErSeowW5/F1UV0ADBq7VVMORynvpauMsbjPNh8bH8nLDgfCmnMxS8fT9flLxE3rP8Aef4b/wBaumMfucs/xGP5qj9ztlssmvtMVdut9JQsqXVNHN4PC2MP3R7252gZ6xn8anCiPE48i22u5/wC70szj5ml/Ld/wemje03xM+OY7wurWIrmI8P22+tITUaQu9OHRNMtFKwGUeICWEdfQo5w7sWna/S1BUy2OzSufR07jmjjLweU3O8kdSTk/hUuu2BbJ8mIN24PNGWYzjqPMoxwcfnR0MBLN1K51O4AeM0scW4d6egx6MJSZjRmY5x+UtETqxnk3frV0x73LP8AEo/mp61dMe9yz/Eo/mrcIue8vzl12K8mn9aumPe5Z/iUfzU9aumPe5Z/iUfzVuETeX5ybFeTT+tXTHvcs/xKP5qetXTHvcs/xKP5q3CJvL85NivJp/Wrpj3uWf4lH81PWrpj3uWf4lH81bhE3l+cmxXk0ztK6Yxj1u2cZ6ftKP5q1nCQ/wDu+tsWesAkgx5tkrm4/EApWVE+GQMduu9J0/0a9VkYx5jLvH/Utxabadsz84/LnMRXUjHm0moKG31HE97q+mtlS2W0TtZ4RA14Y+PlOBfkd+HE5H1pCl7NLaYLf3OWf4jH81RnVrxDrS01XMpAN9ZTu3M6N3UjXgSefqwH4CFPY/cBa1L2itcT8vzKadYm1sx82p9aumPe5Z/iUfzU9aumPe5Z/iUfzVuEXLeX5y67FeTT+tXTHvcs/wASj+anrV0x73LP8Sj+atwiby/OTYryaf1q6Y97ln+JR/NT1q6Y97ln+JR/NW4RN5fnJsV5NP61dMe9yz/Eo/mp61dMe9yz/Eo/mrcIm8vzk2K8kHu9qtdo1/pWe3W2iohM+rp5DBA2PdmHcM4Az7g/jU1PVqi3EICOt0xV46xXuFhPmEjHs/5kKU/WrWrM2rWZ/vGXOkYtaP74MC2y730o8Kil3Ugd4seN/UeOPMPR6Vslq7U9rn0mKrm7qMOHtW3eMjx/R8HpW0XOXWBERRRERAREQEREBY1yfspc81sXtkY3ObkdXgY/D3fhWSsW5uDaTJl5XtkY3bd317emPT3Z8mcqx4pPgyWrlfLF9LMKIiKgsW8V1JbLTWXGvk5dJSwPnnftLtsbGlzjgdT0B6BZS1GtrbUXnRl7tFIY21Fdb6imiMhIaHvjc0ZIzgZIQd+mbtbr7p233q0Tc63V9NHU0snLLN8T2hzTtIBGQR0Iytgo1wqsVbpjhnprTlxdC6stlqpqSd0Li5hfHG1rtpIBIyOnQKRyPbGxz3uDWtGSScADzoKi4ias1Hp7VWqK6Orc/T1DZIPCI2sBfQSyNqSyrbgZLQ5jWvHXAIf3Ndn6snEDVFTO+jhorfyKKKKmqKmumbGRIaFtQal55gPL3OALWsJLdzg7phWhTstldTGsgZTVMNdC3MzGte2eIg7eo903DjjvGHHzron0/YJ6kVM1ltss4h8HEr6RjniLBGzJGduCRju6oKw0rxF1BqrUWkqmDwK00Fwmro6qgnDjUN5McOGP6jDyXue0Y9w5h65VxNORkrBltNplqG1Etso5JmTNnbI6naXCUNDQ8EjO4NAG7vwMLPHd0QCMhQ/hBox+hNGiwSXBte4VtVVc5sXLHt0z5NuMnu3YznrhS8934VXfZ31LedU8OBdr/W+GVpudfBzDGxniR1MjGDDQB0a0Dz9OqDfCnpvZSfVbIPCTZWx7vU+XmbOe448Jzyy3P+yxuB8bOCoR2nPpPDf/AHg2j/qkU1Dh7Kzxkf6kb5arP7Yd/wDD/i9t8/i4UG7Sc8NTR8NpqeWOWM8QbTh7HBwOHyA9R6QguIIgXTWVdNRxCWrqIoIy9sYdI8NBc5wa1uT5SSAB5SQEFK02tNUUFVSUd0rpZae66ukgtdUyMZ5UdbLHLRPx0yGR7mH65u4d7OuRTcW9SM0h666nT1LNQvhpqqGnp5QaiRsshYaaNokc6SYDDg7a0Ete0gEZVvChoOW2LwODYyXnNbyhgSbi7eOnusknPfk5WNS2KxU1TJVU1nt8E8komfLHSsa90nUby4DJd4zuvf1PnQQzhlqS/X3WN5juNwtM9Cy3W6op46PcRmaEvc9jifGYTnrjrgHp1CsZYNHarTR1DamkttHTzMhEDZI6drXNiByGAgZDc9cd2VnIK/7R/wBQXXH3jqv1ZUj4e/uDsP3spv1TVHO0f9QXXH3jqv1ZUj4e/uDsP3spv1TUG9REQEREHB7vwqoux39QCy/0y4/36ZW6e78KqLsd/UAsv9MuP9+mQW8iIgIiIB9yVUnBj6sPF/79Uf8Ac2K2z7kqpODH1YeL/wB+qP8AubEFtoiw47rbJKCevjuFK+kpzIJ5xM0xxmMkSBzs4G0tIOe7BygzEWHQ3S210kkdDX0tU+Jsb5GwyteWteNzCQD0Dh1HnHctVXa50ZQvjZW6rsdM6TdsEtfG3dtc5jsZd1w5rgfMWkeRBIUWtor9ZK261Fqo7tQ1FfTNDp6aKoa6WJpxguaDkDqO/wA4WyQVDQ/vw7n/AFFpv79IreVQ0PTth3P+otN/fpFbUE8M8TZYZWSRuGWua4EEeghBr9XfuVu39Cn/AFblDOzD+9/0T96If8VLtWVELtOXiBsrDKyglc5gcNzQWPwSPIDg9fQoj2Yf3v8Aon70Q/4oM3jHW6gpLZZWaYrm0txqLzTxtEgBjmAbI8wvz3NfsDSR1GcjuUJuPEq/NvLtVQU1TS2BllrBTWysYYXS1EUtM2SeUkbmsY+VzOnTbHI7qC0q6K9tEIPCa4QCKmPO5kwGItoPj5PucDPXydVh1dTYZKOnuNVPb3007WwwVErmFkjZi0Na1x6EPO0AD3XTv6IKzqtaavqdXWqw09dYYpoL1LQVVSyN7qarBt7qiMAb9zS0nDm7ichpzgkLD05xLu0On7dLDTUhp6S32uaqhq6qWarqzVymPEL3HLi3He7cXuy3xcZVsRWCww0cFHFZrdHTU0wnghbSsDIpQch7W4w12fKOqx6Oj0xXVu6moLbPU2abwZrm0zC+jfta/Y04yzxXtPTzhBFeH+uL3e79QUtzpbayludHXVFN4MX74zS1LYSHlxw4OD2uGAMEEde9WMe4rV2o2OSrnitsdHz7bI6mlEUYBgc8NkczoOmQ5jiB35BK2h7igqHs1ft7ip/vAuP6uFTaWCmPE6mqXMg8JFmmjD/U+UybDPGSBUZ5YbkD2ojcThwOGlQns1ft7ip/vAuP6uFTWY/+9KmHi/6lm7zU5+nx+Qf6P+P2z7HxdyCUnuKpap4V3O5621jS1zI4tMVtNVVFqkDwXMra2NjJ37c5Gx0ReDgdZ3Yz1V0og8/0+gdbOt2ndR363VFRd5LnXXG/W+3yUsj2zTxsiifGKjML+XHE1mCQQJCWnoQdXrnR9dpzSlXUeps1JbvUG22+mFxq4H8upF1dMIpXNHLEbQ9ucgRBvi5wF6UXzJGyRhZIxr2uGCHDIIQefeG+maHUN6stbTWCGporbqK5VV6klNLLTPnnpG7Hw8olj2guazDclpB3dclbPQGgLxp/U2j6+v0nDUx0VHdKBzmOp3G3iSvE1M/xnZ2CIEDZktzjAyVd0EMUETYoI2RxtGGtY0AAegBfaDhgw3quURAREQEREFccWZvBq+11rqyliZRVdNNIHxbnRMdI5jpHHHuMHGPP1XbV6jsd34h6XdaLnBWPYauGVsRJw18WQT+FgUgvMzI7pVA10ERbQB5jfTby0CU+OTjqPJt8/Vb5rIw7cGAHzhq9MasVpETHP1j6PPu5m0zE8vRjXN21sB5sceaiMeO3dnxu4eYnyFQPSOpNO2i1XWxXa9UNHPBcq2IRTyhrtjpXEHB8h3KeXN4Y2AmZkWaiNuXM3Zy73I8xPn8i+aGKnkbM5whmPPkBdyQMYceh6dSO7PlXOl4rWYtHBu1Jmcw0HC2YS8M7M7c3xKPlh3eDsJbn4OmVqL1cqO1XXRN8rq6mFO6nmp5qmNm2JzXwtcHAeRpc0Y82VP5AxkDmtAY1rT3N6D8C1FpkjkorIPDIKhslJuDhT7RP4jfGaMeIPLjp34Wo1Im82x459cpNJ2Yryx6MQcQdGe+Kh/LPyLouGuNFVlDUUj9Q0BZPE6N3jnucCPN6VK+VF9qb+QnKi+1N/JWYtp/KJ7+y41MeMdvdGOGlU6p4Z2iV7xuZRCMvd1HiZZn4PFytRU3e2af4iR1N0uNLSU9xscXtr3bGOkikOMfC15x8CndRtbTSYIYAw9dvQdPMsKibDNNGHyRT4pIiByR1yXeMDjuPm8mFY1a7VrTHCUnTnZiM8Ya71/6L989q+MBR/iLq7SN00Pd6Km1HbJKh9M50LG1Ay57fGaB+EBT7wam+0R/mx8ieC02P2vEf/wBsfIrW+lWYtETw84/SWrqWiYzHb3YQrBU6bjrmyMiE1OyUOkbkDcAeo/CoXofUtgsDr7a7ve6CjlhvNVyopnhjxGX7gTnvySSD5lPLqWstk5MrYWhnu3M3Bv4PKvinigkrqzcIpHB7cjlDLPFHQnHXz/hWaXrETExwlq9bTMTE8Yan1/6L989q+MBPX/ov3z2r4wFvvBqb7RH+bHyJ4NTfaI/zY+RNrS5T3j9JjV5x292h9f8Aov3z2r4wE9f+i/fPavjAW+8GpvtEf5sfIng1N9oj/Nj5E2tLlPeP0Y1ecdvdofX/AKL989q+MBPX/ov3z2r4wFvvBqb7RH+bHyJ4NTfaI/zY+RNrS5T3j9GNXnHb3aH1/wCi/fPavjAT1/6L989q+MBb7wam+0R/mx8ieDU32iP82PkTa0uU94/RjV5x292gOvtFkY9c9q+MBa/hpcKKuuuq3W6qiqqV10E0csTtzHb4WZwfhBUv8GpvtEf5sfIvuKOOMERsawHvw3Cu3SKzFYnj5+xFLzMTafD+80B4lVDKN1FcJaumjjo71CXvdHgQNfA5hL/OMuB+DAW8br7RYGPXPavjAWwqHMfFd2vqIcRjrmHdyvawfGGPG8/l8yzm01Nj9rxfmx8ibdNmItE8PP2Nm0Wmaz4/3m0Xr/0X757V8YCev/RfvntXxgLfeDU32iP82PkTwam+0R/mx8im1pcp7x+jGrzjt7tD6/8ARfvntXxgJ6/9F++e1fGAt94NTfaI/wA2PkTwam+0R/mx8ibWlynvH6MavOO3u0Pr/wBF++e1fGAnr/0X757V8YC33g1N9oj/ADY+RPBqb7RH+bHyJtaXKe8foxq847e7Q+v/AEX757V8YCev/RfvntXxgLfeDU32iP8ANj5E8GpvtEf5sfIm1pcp7x+jGrzjt7q94hav0xcLLTst1+t9TVw3GkmjjimDnO2ztzgD0ZVjHu/CusU1ODkQRgjy8sfIu0424Uves1isQtKTEzMz4tdbJnyPpA6odJvow85i27zkeN6D6PT6Fs1rLZLvfSf6VLLvpA7xo8b+o8c+Y+j0rZrDpAiIooiIgIiICIiAsa5vMdJubIYzzIxkM3d7wMY9PdnyZyslY1ydspc818XtkY3Nbk9XgY/D3fhVhJ8GQ1crhvcuVIUREQFptc3GptGib7daMtFTRW6oqIS5uRvZE5zcjyjIC3Kw75RUVxstdb7iAaKpp5IagF+32tzS13jeToT18iDScJb1Xaj4XaX1Bc3RurrlaaarqDG3a0ySRtc7A8gyT0W9u8b5rVVwxt3PfC9rR5yWkBY2k7Za7Lpi2WiyAC10VJFT0YEpkAiY0BnjEnd0A656rZlBQ9k0RrNtvtEFWy8U7aWKw0rooboY2MgZAGVzdrHgegnvOBtPTKyHWbX8XqDRxW+6823VrXR1rri+QmnFyfmN45wb0pAzxntkc8O29CCt6OMtu9i2bWHqNUeHxymH1H5w5rpMF4w/GNhhBm34xsB8owpPW8Q9KUdZW01VXuj8CbMZpTA/lboYzLLG1+NrnsYC4sBJAB8oIAUlpmfUl9ZXNtlwvVZUPmhqKunjqjIJqJtVLv3e3jlzvDot0R5J2RloHeFfXD6lraLSVDTXCWvlna15Jrg3nNaXuLWu2vePFaQBlzjgDJzla218RNJ1l3itcE1XDVVFQKfE1vmhAmczexj3OaA1z2Dc3Puh3KYjqOiAe5UrZOH9Rdo6y46B4u3e1WGorqh8VHaqOl8Ggk5juaxuWZOH7sk+XKuk934VXPZx0/eNNcNRa75RSUVYLpXzcp7gTskqpHsd0JHVpB/CghTeHOuhxJfRnjjqrpZ2SY8Ej3/TyM45XIx+HmefxcKqTwj1nw9uOk7rqTWM9bS3HiPb3RWprt0W508jhUPPuRKQOoYAPG6k9APVoqYfZQfSc1nOFmbJs9VH7tvPcM+CY2gZ/wBtnJ9zjAUG7Tf0jhv/ALwbR/1SILeCjHEu21l1sNHTUNOZ5GXi21D2ggYjirIpJHdfMxrj+DopOFotb6iGnLRFUso311ZVVUVHR0rXhnOnldtaC49GtHVxd1wGnoT0IVJLovW77RPNzNQeqLrPXTMxeH/6wbVZpTjmYyIiQB7jHRw7l868GtaKr1NfW01ytNEaGtge9te9zJH82AUrw50xDA4CTJYyMRtc4F31ws+fV4stDTv1bb3W2eWYxl1IJaymY3cGte6ZsbQxpLmjxw38QJWs1FxHttJFFLb6aqrYhd4LbPL4HMY3F8ron8pwbiVzXNLcNz1BQVraKDU95o6aS11uo5bdG+qg30c4mdSVhna5r43OqQ18TIy1jHF8jRteHNBJC9DsBDQCcnHeoY3iTo6GipJfDpGRTROkcPBJB4Kxsphc6YbfaQJAWHdjBB8xKmg7kFf9o/6guuPvHVfqypHw9/cHYfvZTfqmqOdo/wCoLrj7x1X6sqR8Pf3B2H72U36pqDeoiICIiDg934VUXY7+oBZf6Zcf79MrdPd+FVF2O/qAWX+mXH+/TILeREQEREA+5KqTgx9WHi/9+qP+5sVtn3JVScGPqw8X/v1R/wBzYgts9ypGHhtqJ9kultaYYbPe6ivqrxbnv9sml58zoeWRlobM0wiTJHSMDvc5XcmAgpGw6C1lTVlTcrXLHZbnU0dvttTPK8EPpRRxslc0Mz7dDIHGMnAyXDudlbawaLrbRa9JWyjtPIpbRqytqtm9p5NI4VgjeTnrnmR+nLsnyq2MBMDzIK301S1lVxOmrKzSVwtNDb21UNskEcAhlMr2unqHubIXF0paNrS3oAS47nYbZCYHmRB5i426Iv8Ar7tB3ywad1XU6cq36IpnGSPIZUN8MkBikLfGDDnqWn4QR0Ul4e8HeINq0PZbZPxe1Ha5aWijhfR0kFLJDAWjGxjnMy5o8hPXC3VD+/Duf9Rab+/SK3kHlzW/A3iHPxD9dXsqXaSit9kkjluErY21cuDK40zY4wGGPByS/PVxwDjpbnZh/e/6J+9EP+Kmerv3K3b+hT/q3KGdmH97/on70Q/4oJfrekqa7Rl7oqKMy1VRb6iKFgIG57o3Bo69OpI71VT+G2oI7RaLa7lT2SyVduq7TbmP9sgk8IhdOHk4aWwsbNy8E9JCO9rc3aopqLU9zp9TDTun7HFda6KiFdVGes8Gjiic8sY0O2PLnuLH4GAAGklwyMhWtTYuI3g1aKOK9x3M01YLtUG5Dl3EuqYzEKQGTETuSJA07Y9m4NJz1GPNpXVsLat9Ba7/AENlqrvVVBo2VIlrC19JTRwSuPhDSQ17JvFMh2ktJBA6WHrXiHRWW33ZkFLUuulDSuqGQVNNLFFOGPYyTZIWhsgaZG52k94UgsepLZea6spLf4TL4JK+J85pZGwPex5Y9rJC3a8tcC04JwQfMg1HDS03S11Wo33QTudV3CGWKebZvna2ipo3PcGEgEvjfkecHHTBUxPcUQ9xQVD2av29xU/3gXH9XCprNLjihTQ7xk2WZ23m1Ofp8YzsA5BHXvJ5nkb4pcoV2av29xU/3gXH9XCpvLURDiXT0vNZzjZppAz1TeHFonjBPguNrhkj27OW524w4oJP5F009VT1AkME0cvLeY37Hh21472nHcR5Qu49xXn3TsWrrFXaquejaCSvOodR3OinYesdDWCoLYa1wJ+lCPIkA7zHH5ygvymqqepDzBNHKI3mN+x4dteO9px3EeULuXm3SRbpd8WlJNT1untNO1HeWVt2M7Y5JJ4xCYmPnkBDDIXTSE9C4s2g9cHIpdTaxvNtYZdU3Wk8G0nc7pBNTwxxOrHU9a5lLO8OYekkQa4tAAdu8g6IPRSZC87XfVetLLa6w0uoq2sfcNOWm7zT1TWf6A6er5VVLHtjOyNsRLsFrwzbuwcEHaUN11FVyWO1U2uoqq33DUxoxVWu4MrZo4PU+aV8Lqgwta48xjXNIbuaDgnIGAvJ0sbZWxOkaHvztaSMux3486+152tVfW1PEHRLr9qy4RNoLpqC0xVMssUfhRgqWMhY8lmHSPYNpxguDemDkr0SO5AREQEREEF4oTTeod+hhrHRuZZnzCNkZDhiQ+NzB6Bjb+Fa3U1htll09S6itMlyilhqqSUudcJ5AY3SsDgWucQQWu8ykWsnNlpL3RurntD7JMTTiHcBncOZnynybVprvIbjwFNQ0kv9RY5sj7KNrXf82r26NrRWuJ+fH/rx6lYm1pnkm1yk2NhPOEWaiNuSzduy73Poz5/IoHb7JQ3ziBqeG6VNdOIHQSQNiq5oGsa5rmuaAxwB6s7/AClTeapEtDR1DZzGJpISCGbt4djxfRnz+RR21v2cVqwCbmNqbV5W4wYqh7dvpxvxlctGZrFscJx+XTUiLTGef7c8PQaOPUVqE0z46C6SMh50rpHMjdGx7RlxJIG4rVcQp3S6AtFS64yuZmmnmMLXQGojyzectwWDa4nHyLc6f9p15q+HIaHtpKkHHdmJzCf/AJF06nj9U+H3gwr31Lqu0ylrzDtNS7k7mvP2ByA7HpwtxONaLT5T6MbOdKa/X7slugNOHPi3Tv8AurU/PXJ4f6dwcNun6VqfnrdaXrPVDTltr858JpIpc/zmArYrlOtqxONqe7rXS05jMVjshmgt1HBqGzunmc23XGVkJme6RzYnsbIzq4kkDcfxLWXe30V24jWyjuM9XJDU2IyMbDUSwAvZIPGwwjvDz0PmW1oCaPiTqOnLtgrLfTVjTjuLd8bjjy9zf+CxdRy8nVuj6/wl0oEngzwY8ZE8TwH59LmDp5MLvEzvJmPnH4/blMfBET8p/P6bD2PtOfY3T9K1Pz1rdVaFtNLpm51NtfdIq2Gkkkp3+qdQ7a9rSQcF5B6hT0dy+J42ywvif1a9pafgPRcK/wCRqROZtLrOhp44VhqaWv8ADNIU9ybKI+fSRzB+3fjc0HOPL3qMQ2ChvfEHU0VzfXO5IpJIRFXSxBrXRkEYY4DvYVl8O6hzeGdJE+cwvomSUr5ANxYYpHM7vL0aF9Wt4j4w3iESE860Uz9uMYLHvH4ejx+NdKxNLXis+GfvDE4vWu15faWR7H2nPsbp+lan56ex9pz7G6fpWp+epWi5b/V6p7um40+mOyKex9pz7G6fpWp+ensfac+xun6VqfnqVom/1eqe5uNPpjsinsfac+xun6Vqfnp7H2nPsbp+lan56laJv9XqnubjT6Y7Ip7H2nPsbp+lan56ex9pz7G6fpWp+epWib/V6p7m40+mOyKex/pzzXT9K1Pz1haaoIrFxErbTRzVfgk9qjqWxz1Mk2Htlc1xBeSR0LVOCFErnmn4p2aXyVVrq4T/AOl8bx/zK3TUvfNbTM8J/f4Ztp1riaxji79XGSXS2qI4qtwkZRybNjdrojycjr5c9+fTha3T+idPV9ioK14uZdUU0cpIutTjLmgn6/0rfXT263X2HwsgclzfpX0nMPk+y78/hwsThbMZuHdice9tFHGfhaNv+CtbWrpTNZxx/Hsk1rbUxaM8Py6fY+059jdP0rU/PT2PtOfY3T9K1Pz1K0XPf6vVPdvcafTHZFPY+059jdP0rU/PT2PtOfY3T9K1Pz1K0Tf6vVPc3Gn0x2RT2PtOfY3T9K1Pz09j7Tn2N0/StT89StE3+r1T3Nxp9MdkU9j7Tn2N0/StT89PY+059jdP0rU/PUrRN/q9U9zcafTHZEKnh/YPB5eULoH7DtPqrU9+Dj69ZfDerlrtA2WpnkfLM6kY2R7zkuc3xSSfKcgqRuUS4U+Lo2Okz1payqp+veNs7wB+LC1N7X052pziY/LOxWl42YxmJ/DeW2UvfS5lqX7qQO9sZjd1HV3md6PhWyWstj9z6T2+pk3UYd7Y3G7qPGd5nej0lbNcZdoERFFEREBERAREQFj3F2ylzvkZ7YwZjbk9XgY+A9x9GVkLGuTttLnmSM9sjGYxk+7HT4D3H0ZVjxSfB3s7l9LhncuVmFERFQWg4j01RWcPNR0dJDJPUT2qqjiijbuc97oXgNA8pJIC3612p7n6i6bud5MDqgUFHLU8prsGTlsc7aD1xnGPwoI/wPoay2cG9HW640s1JWU1jo4Z4JmFr4nthaHNcD1BBGCFMVAOEPFrSHEm20pstzpTdXUEdZWW5khfJSbsZY520A7XO25C7dV8YOGulb9PYtQ6vttuuVOGmWnmLg5m5oc3OB5QQfwoOBwq0uLL4CWVBqfUR9lFcX+2iBwIJxjZvwSN2M4JHcSF1VXCy0zVd+cyumhpr1HVCaJtLTl8clRGWSPZKWGQd5cG7sZJ8niqTWzVenrlpH120N1p57H4PJU+Gtzy+Uzdvd3ZwNrvJ5FGtN8aOGGor3S2WyaytldcKt+yCniL9z3YJwMt8wKDPm4f2yS7PuJra3mOudJcduW7eZTwCFje73JAyfLnzKT2qnmpLbTUtTWS1s0UTWSVErWtfK4DBeQ0BoJ7+gA9Cj2u+I2idDzUkWrNRUVofWNc6nFQXDmBpAcRgHuyPxrI0LrjSmt6KorNKXulu1PTSCKaSAnDHkZAOQPIgkROAobwb1lPrrRYv1RQxUTzXVdLyo3l4xDO+MHJ84bn8K1Vx46cJrfcqm21uubTBV00zoJonOfuZI1xa5p8XvBGFJeHWkbZorTnqJaJaqWl8JnqQ6oe1z900jpHDIAGMuOOnd5+9B1Cpf7Kb6Tw3xBZWyeDeqLeh57hv8G27h5ubuwfc7cjKhHac+k8N/8AeDaP+qRTcVD/AGU30vhh2Cytk8G9UI+/nuG/wfbzB5uZu2n3OMjKr/tY19HarHoO63CdlPRUOurXUVMz/cxRtMhc4+gBBc4Wm1hp6l1JaBQ1FRUUskU8dTTVNOQJaeaNwcyRu4EZBHcQQQSCCCoT+yC4N/xgWf8AKf8ANT9kFwb/AIwLP+U/5qDM1Dwx9cMMDL7qm7Vz443Mc58UAbkyNkDmMDNsbgWBu4DJaSM+VZtLw8p4BFS+rVwdbaa6sudHRlkQbTyCZ8xYHBu5zC57hgnoOnpWm/ZBcG/4wLP+U/5q4/ZBcG/4wLP+U/5qDNfwotDblHcKavnjn5s7pzLS084lZLVSVO3Ekbg0tdK8BzcHaeuSARYYVYfsguDf8YFn/Kf81P2QXBv+MCz/AJT/AJqDP7R/1BdcfeOq/VlSPh7+4Ow/eym/VNVNccuNvCu+cHdXWi1a2tVXXVloqIaeCNzt0j3MIDRlveVc3D4EaEsIIIIttMCD/wCU1BvEREBERBwe78KqLsd/UAsv9MuP9+mVunu/Cqi7Hf1ALL/TLj/fpkFvIiICIiAfclVJwY+rDxf+/VH/AHNits9xXnjSXEjRGh+NXFam1ZqOhtE1Vd6SSFlQXAvaKNgJGAfKg9Doqw/ZBcG/4wLP+U/5qfsguDf8YFn/ACn/ADUFnoqw/ZBcG/4wLP8AlP8Amp+yC4N/xgWf8p/zUFnoqw/ZBcG/4wLP+U/5qfsguDf8YFn/ACn/ADUGBQ/vw7n/AFFpv79IreVDcO9W6c1p2q7veNLXanutBHoynp3zwZLWyCse4tOQOuHA/hV8oNXq79yt2/oU/wCrcoZ2Yf3v+ifvRD/ippq0E6WuoAJJopsAf+W5UVwB418LbDwY0nZ7vrW10dfSWyKKogkc7dG8ZyDgd6D0QoxqTST7jfo77bL7cLJcfBvA55aVkTxPBuL2tc2VrgHNcXFrh1G53eCov+yC4N/xgWf8p/zU/ZBcG/4wLP8AlP8AmoMiu4SWuvuFxrKy83OWWtiqYd7hEZGsnkje4F5bucGmJoYCcNbkY8q3tk0jUWZ08Nv1HcYqB9aauGk5MLmw75zNLGHFm4tcXOHU5aHdDnBEa/ZBcG/4wLP+U/5qfsguDf8AGBZ/yn/NQWeh7iqw/ZBcG/4wLP8AlP8Amrg9oLg3j6oFn/Kf81Bg9mr9vcVP94Fx/VwqbS1DxxOpqTwzxHWaaTwb1RaNxE8Y3+DbdzsZxzd2G527TuyK/wCyjcaK8UvEe8WyoZVUFdrmvnpZ2Z2yxujhw4egqwJah3snU9J4Xhhs00ng3h8YyRPGN/g+3ecZxzA7aM7SCXAgJQR0wuGta0YAAyc9y5XGRjKD4fBE9jmPjY5jjlzS0EE+kLkxsJyWgkjGSPJ5l9Ag9yZHnQfIiYDkAA4x3eTzLiOCKNrWRxsa1vuWhoAHwLsByiDrMERxljTh24ZaOh8/w+ldg6LgkBNw86DlEXGQg5RMjOEQaC7ShtxrGeHVcX/hrnbGRbmM8cjmDzu8mPMo5o59PUcIXWuWoibI2kqqMtc8Bw2ukYOh9GFJbrJIK2rDaysjAtznBkcOWtO4+O0+V/k2roqdC6Pq55Kqo05bZJpXF73ugGXOPUk+leil6xXE84nt2ee1LTOYY2lLnBUaK0681jY5JYKQOawglzi0AtI8gPcViV00dNxFsVS+c7ZoLhTOdJhuMOY8D4BggKJWTTljpNH6QvlNa6aK5S3Kj31LW+O7dKQevpCsqssdpvtJybzQxXFkVRI5gqYs7DkjpnyY6Z8oXS8U07zMTOJzDFNq9cT48Gk8KpYeKFY4VMIjqrGw7xIPdRzOHn78P/4La2eohqrdZAyunqY56b3bmDM45Y6v+xPXOPOcKE3bRmlRxOoLY2xULaOSz1EzoWxeKZGyNAdjzgE/jWw4RQRUdpdR0stQ2njudUxjDDs3jY05eO9p8uPOcJqUpsRas8cR8vrHNNObbc1mOf4bbhXWQQ6Io6KeoiZLRPlpHNe8AjlyuYO8+YBSjw+j/hdP+db8q01ZofSNbVy1dVp22zTzOL5JHwAlzj3k+ldXsfaK97Fr+LhcrzpXtNpmePlH7daxqViIxHf2a+/1dLTcRbPWMq4g2qt9XSyObIDt27ZG/wDJy6OIE8Z0vHcoal83gD6GtaSOmGTeM7I8pBOR5MLAqtEaSPEH1PNgoW0vqM+bltiwN4mADsDvODhffBugo5tL3O1yxGah8NqYjTyRe1lnMI6g+UjvHkwvRila1vEzwx8vOfNxzaZmkx45/CwfD6P+F0/51vyrg19Hg/6XT/nW/KtF7Huifexa/wAwFweH2itp/wDZi1/FwvLs6XOe0ft6M6vKO/s1Wlqylo4tWUT6xkDYLtLLG9jmkhsrWSZb5+rnLtq6iKn4tUM7qnDKi2zwneQGN2mJ42ny5yStDa9EaTqqTVL57HSbqW5TRQOZDkxMEUZAaB6STj0rd6IsVovuhbLFeKCC4Rw0UDomVEQc2ImJudp8ufKvTfYiZtmeU8OcfVwptzEV4c/VMhX0f8Lp/wA635U8Po/4XT/nW/KtD7Huifexa/i4T2PtFe9i1/FwvNs6XOe0ft3zq8o7+zfeH0f8Lp/zrflTw+j/AIXT/nW/KtD7H2ivexa/i4T2PtFe9i1/FwrjS5z2j9mdTlHf2b7w+j/hdP8AnW/Knh9H/C6f8635VofY+0V72LX8XCex9or3sWv4uExpc57R+zOpyjv7N94fR/wun/Ot+VPD6P8AhdP+db8q0PsfaK97Fr+LhPY+0V72LX8XCY0uc9o/ZnU5R39m+8Po/wCF0/51vyqK6tq6ZusdJVbaiBzW1VRA4iQdA+B3f17stWZ7H2ivexa/i4UU4maN0tb7banUVht9O6a8UkEhjhALo3Pw5p9BC6aNdLbxEzx8o+f/AFz1Z1NnMxHf2ThtbBL6rNjuD3GJgJDAHGIGPOW47/P8PRajhbVU9PpFtFLPFG+krKqAtc8AjbO/A/FhRu12a12Hi9dKSzU5oITp50hZBF0a7mDxmj649M/D0Uzq9EaRrqqWsqtPW6aeZ5fJI+AEuce8n0q3rSkbMzOJxPh7pSb2naiOMZhufD6P+F0/51vyp4fR/wALp/zrflWh9j7RXvYtfxcJ7H2ivexa/i4XLGlzntH7dc6nKO/s33h9H/C6f8635U8Po/4XT/nW/KtD7H2ivexa/i4T2PtFe9i1/FwmNLnPaP2Z1OUd/ZvvD6P+F0/51vyp4fR/wun/ADrflWh9j7RXvYtfxcJ7H2ivexa/i4TGlzntH7M6nKO/s33h9H/C6f8AOt+VPD6P+F0/51vyrQ+x9or3sWv4uE9j7RXvYtfxcJjS5z2j9mdTlHf2b011Hj9t0/51vyqK8P6qmgfqOldUQNEd8qHNzIBlrw1//wBRWaeHuicfuYtXxcKH6U0XpWuvuroquw0MsdHcRHTNMfSJvJa7DR5Bkk/hXXTppTS3Gfl8o5/VyvOpFq8I7+X0WHanteaRzZKt7TRggydxGR1d/L//ALW0UF4Ml50JYTmct8Bd1z4n00/8fN6MqdLz6lNi815O+lbapFuYiIsNiIiAiIgIiICxrkcUvfMPbI/pXuvdj/h5/RlZKxrlu8E8TnZ5kf0r3WN4z+Dz+jKsJPgyG9y5Xy1fSkKIiIMC8Xq1Wh1G253CnpHV1UykpGyyBpnmfnbGwfXOOCcDyAnyLT0mvtHVsdMae/UUrKsU3JwTiQVL3xwY6fXujeB/NK+9ZTmG66YaJnR827BhAqoIt/tExwRKC6Tuzsiw/pnO1rgd3dK6ltlrqrlWycqlpIXzzPwTtYxpc44Hf0BQRaj1vw+gp2VlJd7XFFNHTuZJEzaHMnldFD3DudJG9o9LSvqs1hoAySTVVztTngPL3PYCcMqRSu6keSYiP4VX47VfBgjIv1eQf/ymo+an7Krgz93rh+iaj5qCxJdb6HpKeSGS826KGJswezua0R1AppMjGMCZwYfSV0y6v4fW+aR77laaeSmZWSvcIwDG2kfsqTkN6ct3Q/4qA/squDP3euH6JqPmp+yq4M/d64fomo+agsO66y0K2SpFxuttL6LwkTc1u4xeDxsln7x02Mexx9Dgvo600Na/CmerFtpfBzP4QGjbtMELZpc4H1kT2OPocFXX7Krgz93rh+iaj5qfsquDP3euH6JqPmoLCdqbQT62aB1danVMdT4PI0xDcJTA6p2nxe/lNc/4AVkUuvtH1JhFPfqOTnGFsW1x8Yy07qiPHT66Fjnj0Aqtf2VXBn7vXD9E1HzVaPD/AFhYddaWp9SabqnVVtqXPbHI+J0bsscWuBa4AjBBQarTmo6LUGvZZLNcpa23MstNMTGyDkAzuMkTt307c6PDgPcbevulMKiCGojMc8UcrCQS17Q4dPQV2YHmUY4la901w808L9qqtfR0LqhlM17IXyudI4Ehoa0E9zXH8CDd+pNs+59J+Yb8iepNs+59J+Yb8ipv9lXwZ+71w/RNR81P2VfBn7vXD9E1HzUFxPtVuDHFttoi7HQGFoB/DhebOz3pvXMHaN4jv1BXWGupYpqdl1p2RuLA+WHm05pwWdAxvtZzjIPlICmP7Kvgzj/X1w/RNR81V7w97QPDKz8W+JOoa+71sdvvtTb30Dxbp3GRsVLy3kgNy3DunXvQepvUm2fc+k/MN+RPUm2fc+k/MN+RU3+yr4M/d64fomo+an7Kvgz93rh+iaj5qC4/Um1/c6j/ADDfkWaAAMDoFR57VfBkAk3+vAHefUmo+arpt9XT19DBW0sgkgnjbLE8DG5rgCD19BCDvRFAOKPGHQnDevo6HVlznpaitidLCyKkkmJY07STsBx186CfoqP/AGVfBn7vXD9E1HzU/ZV8Gfu9cP0TUfNQXee78KqLsdfUAs39MuP9+mUT1z2k+FN90lcrVadbXqzXCogLaWup7XUh8Eo6td7jqMgZHlBIVb9k3jRobh9w8koNZaxus1dPUyPjoRQzyQUce9xwzDcFz3Oc8n0geQoPaSKj/wBlXwZ+71w/RNR81P2VfBn7vXD9E1HzUF4Iqh0v2keE+o9R2+wWy+1bq64Ttp6Zstunja+Rxw1u5zcDJ6dVbw6jKAsaa30E0plmo6aR573PiaSfwkLJVUa27Q3C7R+qa7TV8vVXFcqFzWVEcdvmka0uaHAbmtwejh3ILL9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLk9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLk9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLppaOkpXOdTU0MJd7oxxhufhwF3qvuF3GTQXEi6Vdt0ndJ6qqpIRPLHLRywkMLtuRvAz1I/GrBQFh+pNs+59J+Yb8iyKqeGlppamd4ZDEwve4/WtAyT+IKk/2VfBg9Rf68jyEWmo6/wDyoLk9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLk9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLk9SbZ9z6T8w35E9SbZ9z6T8w35FTf7Kvgz93rh+iaj5qfsq+DP3euH6JqPmoLsp6eCnj5dPDHEzOdrGho/EFoZZagcQ4IOdN4MbTK8x/6Pyy8TRgO6nn5wSOg5fU58baujhlr/THEWwS3vSlc+sooqh1NI58D4nNkaGktLXAHuc0/hX1LCfZNpqjY7As0zN/Ip8dZ4zjeTzx3e5A5Z7ydwagk57iqHs3EC9aTuGqJb3JWXqjuV7uEGnoSS54rYpzGygB8jZBtezyN2y+QBXwe7C19uslrt8csdHRQxtlq5K14xnM8ji58nXOCSSennQU1w/1PrWjkj0g+40t01DXX66tkuNw5j4IY6cROe1kbXBxG6UNYwOaA0E+TB7bfrDXOptYWqK2yWahb6jXVldSzc+SF1RS1sdNI9pY5pIJGWE9QHuBycKyrjoPS1wgfFU2pnjV0lw5kUskUrKh4w+RsjHB7C4dDtIBHRcw6E0rA+zPp7PBTusrHx2/kOfHymPwXtO0jeCQCQ7IJGe/qgrPSevNQP0PTDS9rtFLTWTSVFeKyKvqJ5TKJo5HtgjkLi4ANhdmWQvOSBg4JWbV8VNRSRXW+2+3WwWG1VNrbLFPzPC5oqyKnedpB2Mczwgd4IdjHi95mtbwz0RWUdDRz2GE09DRtoYY2yyMBpmnIhftcObGD12P3DqenUrY1ekNPVcNzhqLXA+O6SwzVrcuAmfCGCMnB6bRGwDGPchBC+Nlw1RR6k0eNLVM3hTZ6ypkomuIZcGw05eadw7vGGQ0nudtPkUYuPEequ+t9P6us9dWjRdJ4dD4PGCw3KWOgmqJXOacZETmNiAP+0EnmCuurtFvq7nQ3KppmyVdAZHUspJzEXt2vx5OrenVddVY7VU1FDPNQwOkoJJJaU7cCN0jHMeQB0OWvcDn7IoKquPFXU2nrFTXbUFrtFS27WCW7W2GglkbynsMIEMr3ZDmkVEftrQMbXeL3LX1+qtVaS1xqme6x0Nyus1JYaGljoopvB2yVE9UzeYy5zumHZDTl21o6E9LJt3DXRNvp62nptP0vJraR1FNFK58rBTOOTCxr3ERxk9djNreg6dAuKXhrount9fQtscMkNxhihrDNLLK+ZsTi6Lc97i7LC4lpzlvTBGBgIXS37UV11/ocXygmoJIrxcYGuEElMysiFA57ZRE8lzQCS0gk+MwkHCuNR606K05a5aKWkt55tFUS1MEss8ssjZZI+W95e9xc4lni+MT0UhQaG6SBtyrG+EXBhFtc7bE3LG+MfGb/wDeeYebC3rfcDv7vKtHcnSi51ga65Bnqa4gQt8Tdud1aftnmHmwt3F9Kb3+5Huu9anwhivjKsbd9TPRf3yof1xVjW05il8aV2JpB7YMY8Y9B6PN6FVlou1rm0Jo62w3KjkrWXOi307J2mVuJTnLc5GFadu3cqTcZj7dJjmDBxuPd/J83oXo/wAiJjvLloTE+HKEQu/TjDbepH/gVV3d/wBNYsfhY8Oo5jz69++7VJzK3DpPa29ZfM7y/CmqK+ht3Fq21FfWwUcRsdS0SSytYNxkZgAk96+OElQyqtb6mGorKiKa6VLhKcHme1t6yEdM/B9ctTE7mJ8o+8sVmN5jzn8LECIO5F43rRSo+qj9cP8AwF/ue/6eO70rU8FXZtdy8ed3/iNUfHHQ+2u6n+UfL+BZd6uVvtnExs1xr6eijdY3tY+aZseTzx0BcRkrC4IStns1wlimmlifcKlzXnBa7Mp65H1x6Z/AvZidzM/T8vJmN7EfX8LDXDvcn4FyuH+4PwLxvWhdhO2h1m7fKzF2n8aIZePaYu70rL4Vn/2LtYzIcUNP0cPFb7U33Po/xytJQ320W2PWVNW3ilo6g3SZzWGoYyXBhiwWtcRnuW74V59ZVrBMuPAafAcPFHtTfc+cef05Xq1ImKT9Y+zy6cxNo+k/dKkRF5XqEREBERAREQFC+Ln+q7J9/qH9YpooRxiligstnmmkZFFHfKJz3vcA1oEnUknuC7f4/HUhy1/9csGrfjjRcfbasbdNu9y33Htg+l+c+X4VYjO5VlBc6G5cYrnNbLi6sYzTjm76aRsga7mA4jwT17jg+VWbH7la/wAiMbOeUMaE5m31coiLzvQIiICIiAiIgHuKg+hv3R65++g/u7FOD3FVxpi82i26o1tFcbrQ0cj7mCxk9QyMuHIYMgEjK9GjEzS+OX5hw1ZiLVz/AHhLN4Mj/wBhLCcTftF/UfS/pp7/AOV/hlTpQTgw3/2EsL+XJ+0Xjfnxfpp6Y86nan+T/ut9Z+6/4/8Aqr9IERFwdhERAREQEREBY1yGaXumPtkf0r3Xux/w8/oyslY1ybupccuST2yM4YcHo8dfgHefQCrHik+DvZ3L6XDVyswoiIqI3rOAzXXTDxC6TlXYPJFLBLs9omGSZSHR9+N8WX9cY2ucRxxU+phqn7zVn6h6azgdNdtLvbTGYRXcPLhRwz8sciYbt0jgYu/G+Pc/rtxtc4hxU+phqn7zVn6h6DU9n2OM8C9CksaT636Hyf8A3LVOOVH9rZ+SFCez59QrQv8AV6h/UNU5QfHKj+1s/JCcqP7Wz8kL6JA7ygIIznog+eVH9rZ+SE5Uf2tn5IX0CD3FcoPgxxjBDG5BHkHnVT9krpwgb9+bn/fJVbTu78IVS9kv6kDfvzdP75KgttVD2nADBw3B6g8QbR/1SK3lUPac+k8N/wDeDaP+qRBbYij+1s/JCcqP7Wz8kL7CIPjlR/a2fkhOVH9rZ+SF9og+OVH9rZ+SE5Uf2tn5IX2iCve0bGxvAXXBDGj/AMDqu4f/AHZUl4e/uDsP3spv1TVHO0f9QXXH3jqv1ZUj4e/uDsP3spv1TUG9VRXsA9rXToIBHrQru/8ApMSt1VHev322nf6oV395iQWzyo/tbPyQnKj+1s/JC+1wCCcZQfPKj+1s/JCcqP7Wz8kL7TKD45Uf2tn5ITlR/a2fkhfaIKM7TbWt1rwf2tA/9tabuHoV5juVHdp392vB/wDrrTf8leI7kA+5KqLg01ruMHF/c0H/AMaou8f/AINit0+5KqTgx9WHi/8Afqj/ALmxBbHKj+1s/JCcqP7Wz8kL7RB8cqP7Wz8kJyo/tbPyQvtEHxyo/tbPyQnKj+1s/JC+0QVBbwG9sK5hoAHrFpu4f/jZFb6qGh/fh3P+otN/fpFbyDV6u/crdv6FN+rcoV2Y2MdwA0SSxp/8Ih7x8Kmurv3K3b+hT/q3KGdmH97/AKJ+9EP+KCxOVH9rZ+SE5Uf2tn5IX2hOEHxyo/tbPyQnKj+1s/JC+sjzrkEHuKD45Uf2tn5IQxR4PtbPyQvtD3FBUPZp/b3FP/eBcf1cKnEtJIeJVPXCklMbbPNCagUcJYCZ4zs5+eaCcE8sDYcZJ3BoUH7NX7e4qf7wLj+rhU2mp2HifTVfgYL22WaPwn1PecAzxnZ4Tu2NzjPK25ONwIDSCEoRFhWe7W67wTz26qZURwVMtLK5ufFlieWSMOfKHNIQZqLWXq+UFoqLZBWyPY+51ooqUBhO6Use8A+YbY3dT5lsg4Ef/wBIOUUfrtX2ijvNXaJTVvq6RtI+ZkNJJLtbUyPjiPig9N0btx7mgZOAt/uH/wDgQcogIKICIiAiIg0N2eyO4VzpZa+NgtrsuY4NiA3Hq0noJPN6MLPpLrbJmxxR3GlfI4ANaJ2lxPwA96i3FCk8JsGoG8irJFlkO8u9o8V5djH2fTPwLXaxslgo9FU1+ttkt1JPBPRVQlhpmMeBzYyeoGeoJXppp1tWMz4zh57XtWZx8kzrbdQRyQTR0TWyioY7fBC0OBz3k47vOvqmuVvpzNFPXxxSCZ+WVEzWuHjHuBPufN6F33LJbCA2d3+kRn2o4I8bvP8AJ86g9lsdmruI2qo7nZ6arc8U9REayBshAIexxaSOjSWDAXPTiLRM2+X7atM1mIj5ptURW25U3OLKasYA4NeGtkx58Hr1WstppKC0WNxdVUtO2IdZtsZGYv8Abdw3H/qWt4fwwUE+qrVTwtgiprq90cUTQ0MZJExwDQO7rnC1fEimjfw4tck1HVvjonU1S+Kpw8tazbubNnvO0kH0rddOJ1IpnhP5ZnUnY28J0LzafupQ/GGfKnqzafupQ/GGfKte3R+knDI0zZSPJ/oMfyIdHaUwcaYs3xGP5Fj+LzbzqeTOq4rdcqMzOZT1kYa7a8NbJ8O09eqx6B9Dbmsy40kHg0eObtjjyS7v7hv8/wCBaPQcMNvm1TZIIRFFSXN74oogGhscsTXgNA7updhYfEumgfp2lqamlklho56CaRlQA9hYJtrmkHoXYec/gW4043mxngzN/g2/mmXqzafupQ/GGfKnqzafupQ/GGfKsAaO0n72LL8Rj+RcHR2kwCfWxZen/wCBj+RY/i82s6nk77pSWqut89V4NBU72fTYY2Pe7ydDg5K5hr7bSV1XTy1sUDmOYOXLK1oaNgxtGeg/xUc0RFFSWrUlmiie2Ohus7IoYPFLY37ZGhvm6OP4l8W+yWa48RtUMudqoK5xZRzRmop2yFodG5pxkd2WLe7iJtEzwj2Z25mImI4z7pd6s2j7qUPxhnyp6s2j7qUPxhnyrA9Z2k/exZfiMfyJ6ztJ+9iy/EY/kWP4vNrOp5M/1ZtH3UofjDPlT1ZtH3UofjDPlWB6ztJ+9iy/EY/kT1naT97Fl+Ix/In8XmZ1PJn+rNo+6lD8YZ8qerNo+6lD8YZ8qwPWdpP3sWX4jH8ies7SfvYsvxGP5E/i8zOp5M/1ZtH3UofjDPlT1ZtH3UofjDPlWB6ztJ+9iy/EY/kT1naT97Fl+Ix/In8XmZ1PJn+rNo+6lD8YZ8q+hLbrnE6NstLWRtxuaHNkA82R1Wu9Z2k/exZfiMfyLS2a3UFn4o1VJbqKnooKqysl5cEQY0uZM4E4Hlw4KxWlonZmcwk2vGNrDcupaCiZd5o6d9K0Qjc+JjWYGw52EY6/4rPZeLSG49VKH4wz5VqNX0/hWmdTwGOoPMoHgFxy1x5Tvcj/AJ+lY+l9MaVrdNWysdpyzSOno4pC40UfUlgJPckVrs7Vpn+wZtFsVwkHqzaPupQ/GGfKnqzaPupQ/GGfKsD1naT97Fl+Ix/InrO0n72LL8Rj+RT+LzXOp5M/1ZtH3UofjDPlT1ZtH3UofjDPlWB6ztJ+9iy/EY/kT1naT97Fl+Ix/In8XmZ1PJn+rNo+6lD8YZ8qerNo+6lD8YZ8qwPWdpP3sWX4jH8ies7SfvYsvxGP5E/i8zOp5M/1ZtH3UofjDPlT1ZtH3UofjDPlWB6ztJ+9iy/EY/kT1naT97Fl+Ix/In8XmZ1PJn+rNo+6lD8YZ8qTW+21LvCH0dJM5+DzDE1xcPJ1x1WrqdGaVfTyMbpqzNc5hAIoowQcfAunhZKZeHVj3e6ZSNjPwsy3/wClJrXZ2qzJFrZ2bQ2dnpvBxRsZSyQMjowzbvGGdR4pA7z6fQVtVrLZGGPpMUskW2jDQXSbtnVvinzn0+hbNc5dIERFFEREBERAREQFjXJhfS7WxvkPMjOGu2no8HOfMO8jyjoslY1zaH0mDE6X2yM7Wu2no8dc+jv9OFY8UnwZDO5crhncuVmFERFRF9bsLrvpQijlqNt4BL2WxtUIf9Hm8dzyR4OPJzRk5cGYw8kffFT6mGqfvNWfqHprOnbPdtLvNOJuTdxIHGkmm5ftEw3bo3ARd+N8mWdcY3OaQ4qfUw1T95qz9Q9Bq+z59QrQv9XqH9Q1TlQbs+fUK0L/AFeof1DVKdRXq16estVer1WR0VvpGb555M7Y25AyceTJCCEcc626UsOmYbXFdKp1RdJGy0durzSTVTW0dRJyxICMeMxpxnqQAotZfVCvrNAVg1RdrrNcLJV1NR4Pc54oKqaBsBjDo2uaAQXOa8bW7jncM5Ctu63yx0NfaqSvrKaOquMr2W+N3V0z2xue7ZjzMDiT3Y+EZ18erdHM0jS6uZdLe2xz7DT1rejHc14aAOmcueQMYznvQQng3eqmuvtvjiv9XeGVmnI667iacyilrzK0bQP9iTmZvKGAOUOgIJNtqGwa80RS3G60jKo0dRRB09xL7dPC2PGfHke6MN67Tgk+NjxcqQaevlsv1G+rtdQZo45XQyB8bo3xyNxlj2PAcxwyDhwBwQfKg2Lu78IVS9kv6kDfvzdP75Krad3fhC8ycALPxYrOH8k+ldZaetlqN3uPKp6uzOnkaRVSbiXh4zk5Pd0QenD0GVUPaaIMHDfH8YNo/wCqRfY07x6BBPEbSOMj/wCzr/8ANVDRac4zWWs0lJxAvMctgl4kUBoaKbxpxIZ5SJWd5iiIyRGSe8dB5Q9p5AHVcRSRyMD43tc09xByCohxhpK6s0TJDSU1TVwCspX3ClpQTNUUbZ2GeNgHVxMYdlo6uGWjOcGCayu8lvsELOGdkvtrb7fVwspLU+mp55mGMbTE6BznEgnDTy2kB53EgILonqIIA108scQc9rGl7gAXOOGjr5SSAB5V2ZCpW8N1BfKaqpK6q1G26t1RSbqdlD/o1JSx3JnKmheYtrvaQ15dud3uLgNvTGuFy4jU9RBbnXK601LBLXQUle+gkmfPKyrLYDM2KF25vJwR0Y1+XHdkILyc4NGSQOuF8ulja9rHPaHO9yCervg86q7jTbdTalrLfYbDb3SmigkunhD5zTxMrGeLSYftIcWybpCzzNbnvGYzVVDpn3O/3fQtRdNR3Cqo6q0RV1snl5dNy4v9HjkY0inkjkE24Hb18Y5BygnXaP8AqC64+8dV+rKkfD39wdh+9lN+qao52jvqCa4+8dV+rKkfD39wdh+9lN+qag3qqO9fvttO/wBUK7+8xK3FUd6/fbad/qhXf3mJBbioy/36/UvGSuEVZdIqGC8UVOyXw4mlDTRCQ0hpydu+Zxw15A8dwG7OGuum8XGitFqqrpcZ209HSQumnlcCQxjRlzjjr0AX0Y6V4y6KIiVzXdWjxiPcn0kYH4kFK0vFjUp0lHe6s2OGGpdQ+3MdHI6jNQ54fG6Fs5Li3a0Bz3Rknflvi4PbQa6vzbxCyonsdvrrrHa2VVwdLJNRUpkp6qU4bzdhyYhG0tcA4uyS7DQrCZQaZ1fahVUkckTYrhLIyelLqaZlTE+SF78twSciRuTkEE96+JZNJaVtlLpwW8upn0U00VNFSvqjLFC5pk6AOL3bpgcdSS4nzoIJBxR1RU203aOG0R0tFRUFVUsMMjjVieunpnOifvGxjmwiRhId7oDqOqukdVjmGlOWciE+K1pGwe5B6D4Ae5d7HNe3c0gjyEHoUFH9p392vB/+utN/yV4juVA9rqK5TXvhXDZ6qCkuL9XQtpZ54uZHHIW+K5zcjcAcHGRlSIad494+qNpH+zj/APNQW24gNOVUvBj6sPF/79Uf9zYoRxg0j2jqy02ltn1na66sjukb2G2UJoHQAMfmSSRz3AxgHBYQd2R0PcpD2aoL9Ta54oQanrqSvvTLpRCsqKSExRSP8DZ1a093k82e/A7gF3NmidIY2vaXt72g9R8K+8hURPpHUgu+stWW+mhoKu3XK5VlBLFRPNdWuNFsij3Ho6Hedwbh2XMaBjC2kk2vKLVFqt8t8ufgzqeilgqJqJ8ramV8rjVMlEMRa3DdrQ1zowwHcCcEgLaqq+ipX7Kmrp4Hbd+JJA07chuep7suaM+cgeVZBcB3ledJvXbcq0XSqpb9W3Rtolhroqu1ZgppzcqQmGEGPa9ojY4ggv8AFYHZzkrc3uTUNysYnuVw1ZFcqXUtNLcaanoHcqlgZWPa0wYhPMYI9jstL8jDneVBd1NUQVLHPp5o5Wte5hLHBwDmnBHTygggjyLtVE1VVrS2WuamZPf6SOIXZ9BLQ2tr5ayubVvFO2cNixtfHtduIaH7nFzuikdhqdcnV1FWXCounIl1BPQ1FF4O3waOk8CdIJAdm7AnaGiQuwd23yhBiURx2wroT7xab+/SK3gcrzFxstvEa69oO+UvDK70tsvJ0RTFz5fFfJF4ZJlkchyI3k48Yj8Le9SLhxpbj/TaDsdPNriwUEsdFG19NXWV89RE4Dq2STm+O4eV3lPVBc2rXD1q3b+hT/q3KG9mH97/AKJ+9EP+KqDWuk+0V7JBuEGrrZJbI7E9twq2UhgonsBlJhNOXOMkuMkOGMBw6jy2/wBmH97/AKJ+9EP+KCx1AOOFZcaSxWVltfWmSpvtHTvhpKw00k7HOdujEgI27sY7x8Kml6udDZrPWXe51DaahooH1FRM4EiONgLnOOOuAASsG4ai09T01oqKy40oiu1TFDbXk7hUSyNLowzHeS0Eg+bqgqTT4q7xT8Op6rUt+fJc6usp65kN1niLWxQ1EjIJQ0tzLE5rWPdgOcYznIKmuibjIeKusrVU6jdcuXFRTwUrpWYpN3ODmMY3qANrMk5JJyT1AW6j1Xo/1q1WrWXOgFmo3TPnrcYbG5jiyUnpkODgWnpk+nKxqPVujDq2S1U2WXlzd8mLXMwlhz45l5YbsO0+MXbSR3oJch7itbpu/WjUdrFzsdfDX0RlkibPCcsc5ji12D5cEEZHQ+RbI9xQVD2av29xU/3gXH9XCptLTs9k+mqvBQXiyzR+EeAynAM8Z2eEbuWM4zyy3ccbgQGkGE9mr9vcVP8AeBcf1cKmkrKb2U6aQupvCRZJgB4NOZdnhEWcSZ5IbnGWkbycEHaCEEq8ipKwXmps+jta2OTTGpay5Ou94qoqaOhq4GVEMlW9zSypYzHVjtw2OLiAdoJwFdqYHmQeZ6ey3XbFT19mvcmnKbWNJWRR0dDWsEdK63SiZ8bHkziPmnDh5ST4vjYOR6jahFPaxXU17h0V4fdXUlJUW+rrJIY3Oi8E50EUjZw3AqOXuzs3NyB4uPR+B5lzgeZB5/8AUTVFNVPkibf66U0mk4vDpaWSGadsVwmdPvGSQWxOHMBJIBy7vKy7TY7pbKqxalljvNNXu1Zdo7lUyzTFsVsca0sL2uOxsI2wOaSMA7SO/rem0eYI9jHtLXtDmkYIIyCEFB9moj1bgnur7nR3WrsEb4qWpjqdlY1sgMtYXyOLHyPMkQO3uGOpBwL9Wl05pLTOnJp5rDYrdbZJwBI6mgawuAOQ3p5M+TuW6QEREBERBHb/AEj6me5RGnqXxzWmSLdvzESS7xdv2Xp8yjtWTc+AHMDXF/qE1/Xv3MjB/HlqldTCH3yocaSpfut5YZRJiN3jnxAPsvLnzFQHSeptO0nDJ2nbrdaajrYoKmkkpppMPZ4z2hp/BhevRiZrE144mPy8upMRaYn5xKwuaKy2UFS1k0gkdBKOW7GAcHJ9HXqo/bgYOKswcJGeF2l7sPdncY6k9R6MP6DzFZWjpTW6B05OYpJSaelLtrtpBaAC4+cDHUeVavUVfR2PWthulfMKGkeLhTySzu8XLix7TnyAlvQLGnWdq1I8/wC+jV5+GLfRn2T2riBqyn65mgo6loHecxvYcfkBcX63PrdAxW99LWCR9skjLZJNzo3eDuA5p+uOcDP2XVYFmvdqu/E6rltFfBXRS2MNkMLs4cyY4HwkPUktcIFssbBSVMYiiaNkkmXQjkkYefrj9b8PVXUzS0TPKPslMWiY+XH7u7Rtb6o6TtVfnJno4pHHPlLBn/jlbZVzoDVunbHpqOx3e8UlHV2+eemdFLJhwayVwb+Dbhb/ANkHRfvktv51TU0L7c7NZxlrT1qbMZmMsWnBpeJt8pwCRX2mCpAHeXRufGcenBavrWVBJW6MvFNypw51nwze7I3tDnAfzgQMn4Fp6vUViuvEexy2e501c+WjrKWZkD8nBa2Rv/FhH4VNKSBrzy308rWvoo43b3ZGPG8U+kZ6n0q3zS1bT44j04fhKYtFqx5+rs09WeqFioK8HIqaaOXP85oP+Kzz3FVzw+1jpy06QobTd71SUtbQtdTSxSv2uby3uaMj4ACt97IOi/fLbfzqzfQ1ItMRWcNU1qTWJmYYEDXU+utU0YZI41lFSVjGRu2uJG6J2D5D4rV2W/fDxiuYLHhtTZ4XtcTkO5cjgcDye7Woq79ZLtxCo5LRXw3IVFqqaaZlNJ4w2uZIzr5PrllajuFDYuJlvu1xmFFSzUVRTvqJXYY4jlOaB5vL0867bFs4xxmv2/8Axyi0Yznwn+/dYCKLjiDov3y2386ufZB0X75Lb+dXn3Gr0z2d97TqhJ0UY9kHRfvktv51PZB0X75Lb+dTcanTPY3un1Qk6KMeyDov3yW386nsg6L98lt/OpuNTpnsb3T6oSdFGPZB0X75Lb+dT2QdF++S2/nU3Gp0z2N7p9UJOVErwPB+KFhmzjwm31kB9O0xvA/5ru9kHRfvktv51aO7ansN21rpN1ou1JWyx1k0b2RP3ENfA8Z+DIC6aWleszM1nwn7MampSY4T84+6VXGnM9JeYRDVZnp9gw/G/MZHieY9cfCsHhTKZeHVkLjkspGxH/0Et/wWxljJ9U/9GncHxN6tk+m+KRhv2J8nwlQ/QWrNO2Kxy2e63iko6qjr6uMxSvwQOe8g482CFKVm+nMVjPGPtJNorqRM8p+6xkUY9kHRfvktv51PZB0X75Lb+dWNxqdM9m97p9UJOijHsg6L98lt/Op7IOi/fJbfzqbjU6Z7G90+qEnRRj2QdF++S2/nU9kHRfvktv51NxqdM9je6fVCToox7IOi/fJbfzqeyDov3yW386m41OmexvdPqhJiolwrPL0q+j7jR3Crgx5ts7yP+BC7jxB0Xj90lt/OrC4X1tJWM1E+iqGVFN6tTSRSsOWua9rH9D8JK1u7107bUY8P76sbdZvGJ5pHbItj6X/Q2xbKQM6SbuX1Hienu7/QtktZa2Na+kxSCLbRgA83dsGR4np+H0LZrjLtAiIooiIgIiICIiAsa5M30u3kiX2yM7S7b3PBz+Dv9OFkrGubQ6kwYuaOZGdu/b9eOufR348uMKwk+DIauVw1cqQoiIgjWtIOddtLO5QfybuH5NPUSbPaJhkGIhrO/G6XLOuMbi0hxU+phqn7zVn6h66deua286Q3Pom5vYAE8s7HE+DT9IxF4rn+iXxMbj7oNXdxT+pfqn7zVn6h6DV9nz6hWhf6vUP6hq2vEuzVOoNF11oo2QvlqHReLMcMc1srHOB6HoWtPTyrVdnz6hWhf6vUP6hqnKCqouGddR3u23AXJtwZbq8st7JQW+A27kzgQtJzvdzJWAu6ZZHGD7nJ07+EN0GjIrWyvgdHFboZIrWRiGK57GRzVAf9iWtcQ3HR73u73DF2ogrfVWjLxc7lrCppnUo9UmWuShEjztfJSSOkLJMDxWuO1ueveTjot9oK2XSmrL9eLxTxUlTea5tSKSKbmiBjII4WguwAXHl7jjoMgdcZUqRBw7u/CFUvZL+pA3783T++Sq2nd34Qql7Jf1IG/fm6f3yVBbaqHtN/SOG/+8G0f9Uit5VD2nPpPDf/AHg2j/qkQW8mECIGEwiICYCIgr/tH/UF1x946r9WVI+Hv7g7D97Kb9U1RztH/UF1x946r9WVI+Hv7g7D97Kb9U1BvVUd6/fbad/qhXf3mJW4qjvX77bTv9UK7+8xIJ3xLtNZfeHuoLJbxGauvts9PBzHbW73sLW5PXAye9QHXOndbau9TpHaftdtmpGsdDMauOWeCVk8by4SbMta5jTjYA7d0JDVb6IKJqeF+pqgXSGhpqCy1EjbuXXGCqPMuDauqMkUL9rcta1vQk7tpPiggld9Xw2v09nqWW+hZbnz0FzhFNLWxubFJOKQM2CGNjI2nkPJDR3nPe44u9EFHar0FeLfbLxeqSjY+ulff31D6R7jUzw1Ieadg2jc7aSw7frdpwCehlvAakFHp25s9TPA3yXF0j5Y4+XT1BMcfjQMMcZZGMbcFo8Zrjk5yrERBR3ad/drwf8A6603/JXiO5Ud2nf3a8H/AOutN/yV4juQcEAtOVUvBj6sPF/79Uf9zYrbPuSqk4MfVh4v/fqj/ubEFtphEQMBERAwiIgqGh/fh3P+otN/fpFbyqGh/fh3P+otN/fpFbyDV6uH/srdv6FN+rcoZ2Yf3v8Aon70Q/4qZ6u/crdv6FP+rcoZ2Yf3v+ifvRD/AIoJTxDtdXe9CXyz0HL8LraCWCHe7a3e5pAyfIMlQeo4Y1kN3oammr46mhtt1pp7RRyN2C3U/OEtQ1p67iSNreg2sAYPLm1kQUozhDdXaTmt76+COOeiqJam1tyYai4YkbTzl/kAD2lwx1dHG7605nFt07Xwa1fdqiOCWjOnKe3FhfkvlZLI5wIIxtIcOvwqZogh/Cq33i2Wq5U94tkNvdNdKqqgZFUtlHLmldI0dAMbQduPR0UwPcUQ9xQVD2av29xU/wB4Fx/VwqbSz44oU1NzR1ss0nL8IqMnE8Yzy8cg9+NxPMGcAbS4qE9mr9vcVP8AeBcf1cKm0tQPZPpqXwgAmzTScnwycE4njG7k7eScZxvLt4zgAtLiAlCIuNw86DlEyPOviomhp4JJ6iVkUMbS+SR7g1rWgZJJPQADyoPtF1QVNPO97IZ4pHR43hjwS3IyM47sgg/AvqaaKGF800jI442lz3vcA1oHUkk9wQfaL5ikZLG2SN7XscA5rmnIIPcQvrIQEREBERBpqmnD71USeAPfuoDHzxLgO8cnl48h8u70rNoYIvA4d1M2N3LbljsOLeg6E+XHnWFNTl19nm8Ea8Ot5j5nOwXeOTs2+Tz7vThZ9tbst8DeXytsTBs3btvijpny4861M8ODMRxfFxjDmQNEBlDZ4yA123bg+69IHmXNDAzlSB1PsBme4Bx3Zy4+N6M9+Fxcmb2wDkiXE8bsF+3bh3uvTjzeVfdtYWRSgxhmZ5HdH7s5cevoz5vIp8h9yRRtjftjbktIwABn0LWWyn5duskfqe+DkxtHKM27wbERGCfr8e5/4rbVAzC8YzkEYzjPRae1wOittijNE1hhja0sFRuEHtJHQ/7T7HPpyrHgk8JbjkxOJLo2EnyloTkQ/ao/yQuxFMy1iGPPDGIZNsLCdpGAACeh6ZXRbotkzD4M6LFJEzcX5xgu8T4R5/LlZVUM08o27stIxnGennWJbYiydhMAjxSRMzzd2MbvF/Bn3XlykTwTDMMEROTGwk952hORD9qj/JC7ETMriGFcqaM0EzW0rZSW42NO0u9GfIkETDV1ZdTgBz2nc45D/FAyB5Md34F93dhkts8YjEu5uNhfs3fh8ihUVqnvGvdSQSX690TIPBXxR0dVy27XxY6jB65aV0067WZmcY9nO9tnERHj7pzyYvtMf5ITkxfaY/yQo16yv/1bqv8ASP8A2rg6Lx/9rdV/pH/tV2adXoZt0pNyYvtMf5ITkxfaY/yQoz6y+n7rdV/pH/tXPrL/AP1bqv8ASP8A2ps06vQzbpSXkxfaY/yQnJi+0x/khRoaLz/9rdV/pH/tT1lH326r/SP/AGps06vQzbpSXkxfaY/yQnJi+0x/khRn1l//AKt1X+kf+1cjRWe7Vuq/0j/2ps06vQzbpSXkxfaY/wAkLlkUQOWxsBHcQ0KM+ss++zVf6R/7Vjabiq7Tr2tsj7vcrhTSWyKqj8Nm5jmu5rmOwcDpjamxExOzbOE2piYzDfVEO43X/Qnv5kLW/TcCbxHDaPsfNn0rYcqM5JiYSe87Qo7rBkzdOamkpmGCY29xZO2TJcWxuPd9bju9OVg2TSrq+z0dc7VeqQainjlIbcenjNB+x9KVpGzmZws2nOIjKYcmL7TH+SE5MX2mP8kKNeso++3Vf6R/7U9ZR99uq/0j/wBqbNOr0M26Ul5MX2mP8kJyYvtMf5IUa9ZR99uq/wBI/wDanrKPvt1X+kf+1NmnV6GbdKS8mL7TH+SE5MX2mP8AJCjXrKPvt1X+kf8AtT1lH326r/SP/amzTq9DNulJeTF9pj/JCcmL7TH+SFGvWUffbqv9I/8AanrKPvt1X+kf+1NmnV6GbdKTcmH7VH+SFyGMa3DGhoznoMKKVOi5G08pj1ZqreGEtzcPLjp9as/h7XzXLQ1nramV0tRLSMMr3d7ngYcT6cgqWp8O1E5ItxxMYZtsi2PpT4LDFtpA3xZM7Oo8Uecen0LZ5UM1JWVdqpLJUUng8Q8IpaeflnfmJ8jWua3P1vUeN39O9bO76Y9Ua99X64b/AEe8AcqlrOXGMDGQNp7/ACqbHzmeC7fGYiG/ymVrL1ZvVOkhpxdLnQ8pwdzKSflvf0x4xwcjy/Clus3gdolt3qpc6jmbv9Inn3TN3DyOx0x5OnRZxGPFrM58GzyucrR2LTnqVVmoN8vdflhZy6yr5jB3dcYHXp3rqrdLeFXN9d64tQwb5A/kQ1u2JuMdA3b0HTu9JV2a58UzbHgkGcLnK1GoLH6rmE+q92t/Kz+0qjlb8/ZdDnGOi+2Wbbp82j1Vuhy0t8LM/wDpAyc5347/ACd3cpiMeK5nPg2mVxlajT9h9SJZpPVi73DmgDbW1PNDMeVowMFY0eltl1Fw9cOoH4m5vg7q3MJ6527dvufJjPcrs148UzbHgkOR51jXJu+lxymS+2Rna52B0eDn4R3/AIFpdVWGvuUkdXbL7X26qh2bGMlxA4B+Xb2AeMSMjv8AMtxcRvpNu2N3tsZxIcD3bT+PzenCmI4Tlczx4Mli+lwzuXKxDQiIqI1rSdkN20ux1WIDNdwxrTWywc48iY7NrGkTd2eW8tb03Zy0AuKn1MNU/eas/UPXVr640luuGl5Ky5xUEc15ZC0yXJ1KJnuilDY8BpExJIxE4tBODnLQDlS6q0dWUslPNqCyVEEse18bquNzXtdMafBGeoMuYvS/Le/oghPAfWWkqPgpoqlq9UWOCeKw0TJIpLhE17HCFoIILsg+hTT19aK99+n/ANJw/OUKOi+z4Bk6d4dgYz1p6X7f4P8Arvav5/i9/RcSaN7PUcM00mnuHTI4BOZXup6UBnIc1s24+Tlue0Oz7kuAOMoJt6+tFe+/T/6Th+cnr60V779P/pOH5yhdTors+03P8I05w8h8H5/P301KOXyNvO3Z7uXvZuz7nc3OMhKjRPZ+p3VDKjTfDyJ1Nz+eH01K0x8gNdNuyOnLD2F2fchwzjIQTT19aK99+n/0nD85PX1or336f/ScPzlDHaI7P7XFrtNcPWkEgg0tN0Ig8II7vtPtv8zxu7quGaJ7Pz8Bmm+HjiSAMU1Mepg8IHk8sI5v8zxu7qgmh11oo9PXfp/vH/8As4fP/OUE7Iz2ScHI5I3tex14uZa5pyCDWS4IK74dFdn6aSFkOnOHkj55YYYWtpqUmSSWPmxMb53Pj8doHVzeoyFK9K3Th7Z7RR2vTVx05Q293JNJT0M8TIneEOfytjWnB5jmP2490WuxnBQStU72pZ4Kag4eVNTNHDBDr60vkkkcGtY0GQkknoAB5VY9Pq/SlQ2B1PqSzytqORySytjcJOc5zIduD13uY9rce6LSBnBWo1Fc+GWqbU2gv9x0reKB7IqxkNXPDNG5rpeTFKA4kYMhMbXeVx2jr0QbAa60V779P/pOH5yevrRXvv0/+k4fnKFSaL7PkYdzNO8O2bQ4ndTUowGzCB34piIz5nnb39En0X2fYA8zac4dx8sSF++mpRtDJhA/Pm2yuEZ8zyGnr0QTX19aK99+n/0nD85PX3or336f/ScPzlCJ9HdnuJlQ5+neHY8GNS2YGnpRyzT454dn3Jj3N359zuGcKgOC2n7QOPOuqTXuiOH9NY4iXy00zqTZa+XFzWmLPu2Ni6SlvQOIc7HVB629fWivffp/9Jw/OT19aK99+n/0nD85QufRXZ9gdM2fTnDyIwGUSh9NSgx8qNssu7Pdsjc17s9zXAnAK5i0R2f5XNbHpvh48uLA3bTUpyXwmdo7vLEDIPOwF3d1QdHaC1jpOt4H60paPU9kqKiWy1LY4orhE973FhwAA7JPoU/4efuDsH3spv1TVBqfRPZ+n5fI03w8l5pjEeympjvMkRmjxjv3RNdIPO0Fw6DKm1Jq3RrYqSnpNR2NsczqaGlZHWR4eZ2F1OxgB6l7ASwD3QGRkIJAqX1fc7bae1Zp2qulwpKCn9aVa3m1MzYmbjUx4GXEDPQqzYNYaUnbC6DUlnlbOITCWVsZEnOkdHFtweu97HMbj3TmkDJCj2o6fhJrOWjnv8ej79I1kbaV9VyJyGzTGJgYTno+VjmDHe5pA6hBuvX1or336f8A0nD85PX1or336f8A0nD85Qb1pdnbbu9QuHGOR4RnkUuOVzeTzP5vN9rz3bvF7+i7Z9Fdn2nEpn05w8iEIlMu+mpRs5Uohkz5tkjmsd5nODT1OEE09fWivffp/wDScPzk9fWivffp/wDScPzlC5tE9n6ASum05w7jEBl5pfTUoEfJkbHLuz3bHvax2fcucAcEqtOzVpjg1VcGbfWaqsuipbk2puYqJa+CnMobBPI924u6gMhLHHPuWFp6DCC//X1or336f/ScPzk9fWivffp/9Jw/OULn0T2fqfmCfTfDyLlGQSb6alG0xxCaTPm2xObIfM0hx6HK5k0R2f43ObJpvh4wtLw4OpqUYLYRO4d3kiIkPmYQ7u6oIh2hdQ2G8a54RRWi92y4SR6zpnPbS1ccpaO7JDScBehG9yrOwab4GUF1objZLRoOnr2yQvo56WKmEgfJG6WEsI65dG1z2472tJHQZUxptX6VndAyn1JaJXT8kQhlZG4yc5jnw7cHrvYxzm490GkjICDdn3JVI8MdQWKzcZOLbLverbb3yXmjLG1VUyIuAo2ZI3EZVox6y0lIIOXqezP8INO2HbWxnmGoz4OG9epk2u2Y91g4zhRO7WLgjqS6yXa6W3Qt1r6vlOfUzx08sk26U08ZLjknMjTEPO5u0dRhBJ/X1or336f/AEnD85PX1or336f/AEnD85QqPRfZ8kxy9O8O37g0jbTUpyHTGBv45gYx53jb39F8P0f2eGMe99h4cNayGSoeTBSgNijl5L3nzNbL4hPcHeKevRBOPX1or336f/ScPzk9fWivffp/9Jw/OVB9qHSPCC38DNUz6ZsGjqa907A2F1DTwNqI3RVUMc4btG4Fm8Nd9juAOMqdWfRvAOKwU0tw09w+ZJDSOdUulp6UFhhZHzy8nuLC9m/PuS8ZxlBYXr60V779P/pOH5yevrRXvv0/+k4fnKFzaK7PsL52S6c4eRup5ZoZmupqUGOSKPmysd5nMj8dwPVrepwEfons/MyH6b4eNIJBzTUw6iDwg+TyQ+2/zPG7uqDV6aulsu/a5utVabjR18A0RTsMtNO2VocK15Iy0kZ6jp6VdSgekqPhLpaqmn0vDpC0VFQ0RyvoeRE6QcnwgNJbjPtXtuPsPG7uqkNPq/StS+BlPqS0TOqORyAysjcZOeHOh24PXmBjy3Hug04zgoO/V37lbt/Qpv1blWHZv1fpSh4FaNpK3U1lpqiK0wtkilr4mPYevQguyCrGi1ZpKtjijj1FZqllUIBE1tZG4TCfdyQBnxuZsft+y2uxnBUEi0b2epYoZo9P8OnxziAxPbT0pEgnc5sO0+XmOY8Nx7otIGcIJt6+tFe+/T/6Th+cnr60V779P/pOH5yhQ0X2fCMjTvDsjGf2tS/b/B/13tX8/wAXv6I/RfZ8YCX6d4dtABJzTUo6Cfwc/im9q/n+L39EE19fWivffp/9Jw/OT19aK99+n/0nD85QmfRnZ7gEhn09w7iEUU0shfT0o2Mhfy5nHPcGP8Vx+tPQ4K+qjRXZ9pjUCo05w8hNNz+eH01KOXyA0zbs93LD2F2fc7m5xkIJp6+tFe+/T/6Th+ch11orH7r9P/pOH5yhdRons/U7p21GnOHkTqfn84PpqVpj5LWum3Z7tjXsc7PuQ4E4yF9O0NwBZNLC7TPD5ssMroZGGlpgWSNiMzmEY6OEQMhHeGgu7uqDA7L9RT1cnE+qpZ4qiCbXtwfHLE8OY9pjhwQR0I9Knks7RxNp6YzEONmmk5XqpgECeMbvBPru/HO+tzt+uWNpOr4b6ct3qdpiq0xa6R8gk5FDLDExz3wc8HDTgkwt5npYN3cMrqtt/tt34kxRWm+UldCyyGZ8VPcqd7QJJInxSGEAyncw5bIHBm04wSQQE18i856I07c7jqe4X212SktzrZrO71NVfxVAT1UDJpmml5bRlzSS1vjnaA3IGcL0Z5MLop6Okp4pIqemhhZK90kjWRhoe5xy5xA7ySSSfKgom3ax16/TugX1d8Es+raJ9fNUU1PSweD7YI3Npoed4hLi9zyX7nEMdtAHdr9cas1RetCastl81FarK636KNVNHTiGWO6STtqWOLXuJGwCJrcRnIfIfGOADflbYbHW2mO01tnt9Tbog0R0k1Mx8LA33OGEbRjydOi66nTWnanwXwmw2ubwOMxU3Mo43chhGC1mR4oI6YGAgpqDU1zpNVVNkt9Tb7I243q2W+a6No4ubGw2kTjc5ww+RzmCNhkyADgA9AsXWUl69cerZY9cQV0dPoSOqax9BSywV4a6s3tLCC1zSWHdt85HQABXnV2GyVdLU0tVZ7fUQVWzwiKWmY5k20AN3gjDsAADPdgYXw/Tmn3ugc+x2xzqandTQE0kZMULhh0benisI6Fo6EIKXuGvdR0dmvt2obzbre3TbLbFSWJtJHi4tlp4JP543mV0cYjwAY+53ULZ0+sNXi9sucl6gkt/r5k06bd4HGGmnLnNa8ye75jTgg5AIGCD3q15rBYpq+luE1mt0lZRtDaWofSsMkDR3BjiMtHwYXd6lWzGPU+kx4R4Vjkt+nZzzO73efru/wBKDMb1aCiIgIiINTJBm/TTeAscDQ7PCDLgnxyeXt83l3elZlrbtt1O3liLELBsDtwb4o6A+XHnWG6LOoZZDTUxBodvNMnth8c+Lj7Hy586y7S0ttdK0xsjIhYNjHbmt8UdAfKPSrPgzHi+bnHvbAOQ2bFRG7Bft24d7r0478eVdluZsjlHJEWZnnAdndlx8b8PfjyLrubd7YPao5MVEZ8d2MYd3jzkeQLstrdscvtcceZpDhjs58Y9T6T5QnyX5u2oGYXDG7oemcZ6LU22n5duscfqfHDyWsHKE24U2IXDAP1+Pc+XocrbVH0l3QHoeh+Bai2xbbbYmeCUsZjawbI5cth9pcMRnPjAdw9BykJPi3Y7kQIo06qlu6CRu3flpG3OM9D0WLbotk7D4K2LFJE3IfnGC7xPgGe/y5WVUj/R5BtDstIwe49PKsS2s2zsPJhZikibljskYLvF/mjyH0lI8EbBERFYt1ZzLdOzkifLccsu2h3oz5FGLW58XF68xOZtZUWmmkYc537HvaTjyY3AKT3Zu62zt5ccmW+4kOGn4SorMDBxepJdjGirtk8WQer9jonDI8h6n8AXbS8LR5T+JctTxj6w1XFS93Gz680gaOplbA6nu0s0AkcI5jFSb2B4B6gOGR5lDdR6/wBRVWgaw6kttmqae66JfqCCGkkqIeVtMIdC94eHOB5zSHMLCMEelXPdrDaLtV01VcaCOpmpWTMge/OWNlZskAx9k3oVg1WitLVVDFRVFlp5KeK1utMcZDsNpHbMw9/uTy2enxR1XF1VJqu8asFRrs181quNjt2pbXSNopBUxyNY/wADLOXIyUbcGUOIwQ5wdnocLdal4g3X1x1VgbLba22XBt0o4pKSkqWOppKenkk8aod7VI7LHtcxgBYfKcFT+t0RpatulfcqmzxSVNx5Hhbi54Exhcx0Ti0HG5pjZ42M+KBnAwuqLh/o+K5yXJljg8JfLPLuLnkMfO1zZixpO1m8Pdu2gZJyevVBU+hdT1lo0nW3CiNFTVVDpbTs0tRVMqKp1XzKeUNibEJWjmFwa1u3BcX+Nu6Y32p+I+rdNWugqLs2xPuFNTUUl7tlHSVMz4nTzBjmiZpMcADTlpkzvLXdwwVNa3hvomso2Us1hh5TG0jWCOSSMtFK1zafBa4EbA92OvlXzPw10VOWeEWKOfbDFAebNK8SNicXR78u8dzSTtc7Lh5CgrGG96rlq3TXue13S2s4jNt8MRbURTQ4mDY3Mc2XG1vfscC09c5W8tvE3UstqsmpZ6K0+ouoJ6unoaVjZPCqYxxTyROkdu2ybhTuD2hrdm4dTgqfN0PpVtyqrgLNCKiqrobhM7c/DqmI5ZLtztDgeuQBny5XVTcP9H014qLrDYaZtVOJtzvGLWmbpKWMJ2sc/J3FoBdk5JygjnDjW2p7ve7HR3+ntAhv2mxe6bwFsjXU5DoQ6J5e478idpDgG4wRg9Ct/ccwcVbTL5Km01UP4WSRv/xW3t+nbLQVFvqKO3RQy26hNvpHNBzFT+J7WOvd7Wz0+KFqNW5i1tpCpwdpqamnJ/nwEgfjYuuj/wCp+k/aXPU8P+x92xutKZ6S9xso2PdPSFgPNxzjy3Dafse/GfSujhhOajh5YnnORQxsOfO0bT/yWZNE0y3M+DQOMkDAS6THM8Vww7zD0+k+ZarhMQzRcVL1zS1VVT4822d4A/FhWP8AVP1j7Sz/APJH0n7pYi4z8P4kz8P4lxdnKLjPw/iTPw/iQcouM/D+JM/D+JByi4z8P4kz8P4kAqJcKTt0XBTE9aWqqaf8id4H/DClju49/wCJRTh2OUNRUuCORfanGPM/bIP+pdKf67R9Py5W/wDdf+uy8XWGxWL1WkoqeWOmoWucyGQZDd7AQ3P1gznPoClIIIyFHbjRUNwsr6K5+BsopbcWzuift2s6E7T5GYHf8C3dFLDLRxS08gkhexro3g5Dm46EHy9FmcY82q5y70Xy058h/EuScHyrLblFxnp5Vw13f3oPpF85x5/xJn4UH0i+Q7PnXO4elBp9bw1k+j7vFb3TNrDRS8gwkh+/aSNuOucrtY+SWw0slRCwSubA57Jzt2uy3OfSD3ekBZ9Q57aeR0bQ54YS0HOCcdFo9OXSS96Mt12lip45KqOGR7HZ2NdvGQM+nOPThbrmaeHCJc5xtf8AEgZ3LlcNXK5w6CIio6K2jpK2FsNbSwVMbZGStZLGHgPY4OY7B8ocAQfIQCFgt0zpxoAbYLUMYxijj8kvOHk8kvtn8/xu/qtqiDUnTOnCMGwWr4nH9t53m+2+2fz/ABu/quHaW0y6KWJ2nrQ5kvO5jTRRkP5zg6bI29d7mtLs+6IBOcLbog1U+mtOz87n2G1S8/nc3fRxu5nO283dkdd+xu7PutoznASo01p2oMxqLDapTPzudvo43cznBrZd2R13hrQ7Pug0ZzgLaog1btOaec4udYrWSTkk0kfU8rk57vtXtf8AM8Xu6Lhum9PNILbDawQQRijj6ERckeT7UTH/ADPF7ui2qINVHprTsb4Xx2G1MdDLHLEW0cYMb42cuNzenRzWeK0jqG9BgJBprTsAhEFhtUQh5PK2UcbeXyS4xbcDpsL3bce53HGMlbVEGqg01p2ARCGw2qIQiERBlHGNnKc50WMDpsc9xbj3JcSMZK1eoaHQWmbJNeL1bdP2y20kMUMlRPSxMjijbMHxsJ29GiUhwHcHHI69VKVAONWp59N0ml4Y7fQV8N91PQ2epirIy9jYpnO3OAzjcNoIzkehBj6a1Zwa1Vd2WexXHSN1r5myObT07InveOZz39MfbBzD/KG7v6rv1pqHhJpWvbbtV1WlbXVVELphDWxxMdJHJNzHOwR1DpWbz53tyeoypdRWKzUVQ2oo7VQU8zcgSRUzGOGeh6gZX3X2W03CYTV9toquQN2h81Ox5A78ZIPTqUGj03DoDVdlfdrFRafu1vq31IfPBTRSRzOlIFRk7fGLy0B+fdYGc4VIcONZcKqjjpxPfc7xpmogu9ZQU9t5/Le2pD6QRTsjyDkOd4rh3E9DlekqGipKGm8Go6aGnhBJEcUYY0E9/QdFgx6a0+yQSMslsbIHbg8UcYIIOc5296DR62rOHGlqQV+rWadtkFZLJFzq2GNrZXyRBkgJI6l0bA13na0A5AXVoi68MNXmpdpKTTV28BMRmNHFE/knlOhjJwOntQewfyct7uillfbaC4Rtjr6Omq2Ndua2aJrwD3ZwQeq4ttrt1tMnqfQUtJzMb+RC2PdjuztAz3oIBeta8FtNXmWz3a7aPtdxonRh9PK2JkkJbDsj6Y6YieWjzNcQOhwpjRae0tLBS1FJY7M6JnImpnx0keG8pm2B7CB02NOGEe5BwMBYes7Lo19ludbqm22d1vNO91fPWQM28oDxi95GcADvyt5Z/AxaqUW7leBclng/K9xy9o27fRjGEGJDprTsIiENhtUYiEQjDaOMbOU9z48YHTY9znN+xLiRgkqP6suHDLRMNHLqP1tWOKVzWUrqmGKIEwvMrQ3p9Y9xePM5xI6nKmqrvUN98J422jQtbabXWW6psdTcjLUQcyVkscrIwG5O0NIcc9M93VBmaNqeF2saWom0vFpi7wUzBTTOpKeJ7WNL+cIzhvQb/Hx3bvG7+q1N/wBdcEbXda603u86Npq6F8sVXT1DYg9rnyCWVrgR3uka17vO4AnJGVYdttlvtzZG0FFS0rZCC8QQtjDiPKdoGVjVGnbFUTST1Fmts0shy+SSkjc5x85JGSghnFml0/FwqvF8ttXpyySS0j5aa61VFA+n3zyMk8fe0tLJZBHuJBySHdSAqW7D1fp+4aMfY9S3vTVzudXPVvorMaeB88UT8ioe8hu5xkGQQ4kctrR3dB6onoaOeiNFUUsE1MQByXxhzMDuG0jHTAWNR2Gy0U4qKK00FNMAQJIaZjHAHv6gZQRDWmo+Eml7l6n6sq9K2ysqYnT8mtjia+RkjOS5+COocxnLJ8rW7T0GFtLC7QGo7C7UFop9P3G2PMrjVwwRvjcRHyZDux19rbyz/JG3uGFva6y2mvmE1fbaKrka3aHzU7HkDvxkg9Oq7qOgo6Ok8EpaWCCDr7VHG1rOvf4oGOqCutP684IXO70Nsst70bPXyyRR0cMAi3l7GGOIM6d7WOcxuO4OLR0OFOafTenYTC6Cw2qIw8rlFlHGOXymuZFtwOmxrnNbj3IcQMAlR/Utm4c0F0sL73btP0tabgwWcywxxvNV9aIsAZf5gpoz3KDUx6X01GIRHp60sEBgMIbRRjlmDPJLenTl5O3HucnGFEtTao4P6QurbTf67SdnrWRxSNgqI4o3hgldLGQMdwk3PHmdlw69VYh7iqy0RcWar4j8QLXe7VaamKw3CmpaOR1Gx0nLfTtkIc52c+M447sIJBaPY+uGlhqa202n57KIXTCtip4zDy4pnTF27Hc2UOk9DwXd/VRm2a54E3i5U9roLxoqsrK3NHDBGyFz5hLLzDEBt6h8mHFvcXdT16qyoKCjgoTQw0sEdLtLeSyNoZg942gYwcn8aw4NOWCCVk0Nltscsbg5j2UkbXNI7iCB0KDz927KWjt3CVxtlfZbRUVVRJz6R9NC2W4xvkjkmEby3cH72RSO2kbwPGzgKecAWaY1Jw2pYq25aa1ddYYHR3eopaSB0bZJw10kRDWgEEMYHE9X7AXZ6Ys642u3XEMFwoaWrEeSwTwtkDc9+NwOFzbbZb7c17aCipqRshBcIIWxhxHlO0DKCu77rrgharxcLdeLzo2muEdRMa2GdsQk5z2cuUvBHVzmeI4nqW9DkKRXx/D+0acdqO70+n6S0bWSOrZoIxFiSIQNcXY+ujLY/S0hvd0W5qNO2GomknqLNbZpZDue+Skjc5x85JGSsuooKOopPBKimgmpsAcl8bXMwO4bSMdMIIbou/cKdX1k9NpWq0tdqimaJZWUjInuYOXyA4gD7X7Xn7Hxe7opNT6a07TmE09htUXI5PJ2UcbeXyQ4RbcDpsDnBuPchxxjJWstVv0Tb9d1EVtpbPS6lNuYZmQMYyo8E5h2kgY8TeD184UoQaqDTWnYOTyLBaouRyeVso428vk7uVtwOmze7bj3O44xkr5ZpbTLIo4m6etDY4uTy2iijAZyXF0OBt6bHOcW/YlxIxkrbog1Q0zpwDAsFqH/AMHH9t53m+2+2fz/ABu/qjtM6ccCHWC1EHOc0cfll5x8nll9s/n+N39VtUQaibS+mpt/N09aJN8c0T91FGdzJn75Wnp1D3+M4fXHqclfU+mtO1HO59htUvP53O30cbuZzg0S7sjrvDW7s+62jOcBbVEGqn01p2czGew2qUz83nF9HG7mc1rWy7sjrva1odn3QaAc4XJ05p4zSzGxWsySyumkeaSPc+R0Zic8nHVxjJYSepadvd0W0RBqmab08wtLLDa27S0txRxjBERhB7vJETGP5J293RZNttNrtu/1OttHR72xsf4PA2Pc2NoYwHaBkNaA0DyAYHRZiICgNNxUs014fb/Ue+xxm5VNqp6t9MzkVNXBv3QscHkhxMbg0vDQSMZU+8ipLTvD3Udo1hTakmppq+H10XOpltk1aHQwQ1ErzDXQtztbKxrurT1LZH4AcBkJxo7iHFqW+1lph0rqSgkoZDDVy1sELI4JOW2QMcWyuOS17SMAjr3rtq+INvZqOostDZr9dvA6iOmr6u30fNp6SV4BDHu3AkgOa5wYHbQRuwmg7JcbZqfW9bWwCOC63hlVRuDw7fGKSCInA7vGjcMHr0ytHp6k1bo+/wB+t9Dpd17t92vUlzpq9lfFCyATlplZM153gsIcWljX7gWjoQUE+Zd7W+5S2xlwpHV0Ld8tMJ2mVjfsizOQO7qQuh2pLA2GWZ96tjY4fprzVxgM8UO8Y56eKQevkIKqSyaF1HT19kt0mn4oqq1ahrLpVak50Oa6GQzkNAB5pfIJWMe14DQGd5w1d2luFrqOzcLKCt0zbjHZYpZb3E5sTm+EGjMYe7vErt/l647/ACILdiu1slub7ZHX0j65jBI+mbO0ytae5xZncB1HXHlWovOutK2qmbUVN6oXMNfFb3GOoY/ZPI7a1rsO8XB6nPcAT5FVds4bagZc6yiqoLu2qFyuVbSXyKqpW04NSyYRyOAaKkuDZWsMZO3xAQSAAu2fR11n4c2S2s4aU1LW2GstUs1O2Wkd6oNp3+3CJ27BGMkGUtLt5BA65C1Lbqm31NJcq+okpqO20VTyWVslbA6Gdu1p5gc15DRlxbh2Dkd2CFm1V+stLRsrKq7W+CmkYJGTS1LGscwkAODicEZI6+kKopNBXqhv8t3h0xBV2uHVkl1FmifA3nwyW6KBsjWuIj5kUoeQ1xGepBzjPZovhvcWalttdfdPULbaIL3IygeYpo7f4XUwPigaO73DJSdnigucAcYyF1Rua9ge0gtIyCDkELlRbhFablYuGGm7LeI+VX0Ntgp52cwP2OY0AjcCQcYx0UpQaksadTSHwem3GhxzeZ7YRvPi7fsfLnz9FlWcBtqpGhkTAIGDbE7cxvijo0+UeYrHDf8A2je7lUf7Txv3e3e7PTH2Hp86yLP/AKqpcNhaOSzpCcxjp9afKPMrPgzHi4ubNzYPa4n4qIz7Y7GPG7x5yPIF92wARTYjjZ7fIfEdnPjHqfMT5Qvi5jLYPFgdiojPtpwB43eP5XmXZbhiOXxYm+3SH2s5B8Y9T6fP6U+S/N21H0h/QHxT0Pl6LT2pjBaLFilpIwxke1jJdzYvaXDEZz4+O4d+RkrcVAzC/u7j393ctTbGYtdkHKoWbWx+LE/MbPanD2o+UeQfycqx4JPi3SIiy06qr9ry5Ad4p6E4B6LDtgaJ2YhhZ/okQyx+SBl3i/zR5D5eqzakZp5Bhp8U9Hd3d5fQsO3NxOw8umb/AKJEMxuye93T+b5j8KR4I2CIiKxLuAbZOHRxyDb7mR21p+E+Rae8abs2oKuX1VoWyOgkDo5I53sf1Y0HJaQR3AY8wBW5uo3W6cbYXZb3SnDD8KUYxWVZ2xDL29Wnxj4o916f8MLVbTXjEs2iJ4SjPsb6S/gFV+kJ/np7G+kv4BVfpCf56mCLe/1eqe7O50+mEP8AY30l/AKr9IT/AD09jfSX8Aqv0hP89TBE3+r1T3Nzp9MIf7G+kv4BVfpCf56exvpL+AVX6Qn+epgib/V6p7m50+mEP9jfSX8Aqv0hP89PY30l/AKr9IT/AD1METf6vVPc3On0wh/sb6S/gFV+kJ/nrItmgtMW+4wXCloZRU07t8Tn1csga7BGcOcR3EqUIk6+pMYm09yNKkfJqKtjc3QmnpXB1O0HdJgv8V/R/wBiPT6T5lqqnh9pWrq56uW3zCWeR0snLq5mAucck7WuAGSttVNy66e10bt1O0eM7Bd4ruknmb5vRlbVnuVmt7U/8zg2a28YRD2N9JfwCq/SE/z09jfSX8Aqv0hP89TBFrf6vVPc3On0wh/sb6S/gFV+kJ/np7G+kv4BVfpCf56mCJv9XqnubnT6YQ/2N9JfwCq/SE/z09jfSX8Aqv0hP89TBE3+r1T3Nzp9MIf7G+kv4BVfpCf56exvpL+AVX6Qn+epgib/AFeqe5udPphD/Y30j/AKr9IT/PUaZpW1Ut21bTUb7jSxUVHDPC2G4zsAkdFIS44f4x8RvfnuVqqDT/ug1197Kb9VMu2lrak5zaf7MOWppUjGI/uJbTSkbKvTtnjqeTIJrNE2Rrh47w5jM/8ApPl9JCzNN6atGnYJYbRTvgjm27mumfIOgwMbicfgWNol3/gNhZmL/U8BwR4/uWdx83+OFIlwvaYmYjwdaViYiUatOiNO2u5x3GipZ2VMRJY51XK8AkEHxXOIPevu+6NsF7rjW3GmnknLAwuZVSxjAzjo1wHlUiRTeXznPFd3XGMNTeNPWu7WqG2V0Mj6WEtLGtnewgtBA8ZpBPT0riy6dtVnt09voIZWU9QSZGvne8kkbT1cSR0HkW3RTbtjGeC7EZzhHbFoywWWvFbbqWeOdrCwOfVyyDB7+jnEeRfN10Rp26XKS41tJO+pkIc5zayVgJAAHitcAO4eRSRFd5fOc8U3dcYw0+odOWq/xwsusMkrYCTHsnfHgnofckZ7vKlNpy1U1gksMUEooJGua5hneXYccnxydw/Gtwim3bGM8F2K5zhotP6UstgqJai1080UkrNjy+pkkBGc9znHCjNHo6lttBJUV1dUULo7oZKYR3GVsDIjUAxR7M7BkYGMd5Vh+RQLkV150jX09RVYkZf3ct9QSAI461pa0dPMAB8I+FddO95zM25Zcr0rEcI5p41cr5avpeeHcREVBERAREQEREBERAREQFH9Z6bsOohaG3zJFtusFxo8TGP/AEmLPL7vdd58XyqQKqO0fR1VZFw9FJSzVBh15appeVGX7I2uk3POB0aPKT0CC1x3KGR3/Ud01ncrdZqe1R2yzVMNNWvqzIZp3vjZK8R7ejA1kjMFwdudkeKBkzMdyjVZo23T6ndqCKqudFUymI1cdJWOiiqzH7gysHuiB06Yy0BpyAAg1E3FPT8drpLg2mukzKy309fBHHTB0jmT1DII243e7L5G9PNk5XFZxStFGa0Vdqu1O6jq4aB/NbC1rquRjJBTteZNu4MeHOcSGNAOXd2fq3cLtNUW3luuUjIWQxQMlrHObBFDUNqI42DyNbIwec46E4xjaV+ibPWw17HeFRSVlybdOfFOWyQ1LWMjbJGfrfFjAx1BBOc5KDSN4t6ffFHPFRXWWn5EU9TOyFhZSMkqH0+ZDv64kjcDs3dPGGR1W94f6lqdTUNxqKi01Fu8EudVRN5rmESCGZ8e4bXH7HrnHXuyOqxqvQdlq6aqhrpLhVvqqOGinmmqnOkkjildKzJ8+57uvmwO4Lb6b0/R2F1w8ClqjHXVkta+KWUvZHJI4vfsB9yC4udjzkoNNxss1y1Dwk1VYrPTeFXCvtNRT00O9rOZI5hDW5cQBk+UkBbvR1HUW/SdpoauPl1FPQwRStyDtc2NoIyOh6grXcVdRVWkuG+odT0UMM9Ra7dNVRRS52PcxpIDsEHHTyFbXTFfJddOW25zMaySrpIp3Nb3NL2BxA9HVBsVH6nTlim15Saplz6t09vlooTziPaHva5/ieXxmjr5FIFVN5pKp3ao0/WimmNKzSdbG6YRnYHGpjIaXd2cZ6ILWWp1ldJbJpC83qCOOSWgoJ6pjJCQ1zo43OAOOuMjyLbLDvluprxZa60VrXupq2nkp5g120lj2lrsHyHBPVBXcHFyjihgqLvQuoOXbpJLjSlwdPT1jZqeJsA6hpDjUNLXEgFpa7IBK2VHxW0/Uz0FNHS3E1NfUvpKaJsbH8ydkjWyRNc15YS1rhISHFvLDnAna4DPvHDrTF0uctzqaKRlbLQR0L54ZnRv2RyNlidkf7Rj2NLX94xjuXFRw/tFZNRVVwq7rX1lA4PpKqorC6SB4lEhezoA0ktDTgYLBsxgkEMrhpqefVul2Xmotc1tL6ieJscjmnc1kr2Bw2uPft8uOufJgmTLTaS0/Q6boZ6C3PqTSvqZZ2RzSl4hMjy9zGZ7m7iSB1xlblBVXHbSWoNS6o4b1lloPCoLLqeGvuD+cxnJgaOr8OILvgbk+hWo3OOqr3i7ry4aOv8Aoa3UVHS1Eeor/Fa6h027MTHjq5mCPG+HIVhtzjqgeRaDTenLHaNQagu1sB8OvFTHPcczb/bGRhjfF+t8UDot+e4qr+EtruVFxU4p1lZb6qnpq270klJNLC5rJ2tpGNLmOIw4A9MjPXogtBFVNz4hX2n4o1unqVtFVU9JX0dMaFlHKah0EsAklqDMHbGCPJOHNwQ3GckLuHGO2Cht9XJY7tEa6jFxiheYeb4IS0NlDQ87nOLiGxjLzsccDpkLQRVHqvifXtqudaqWqpLPHTXgmvfBHLz30cJJMbC8HDZGuwHbQ7aeoBBWz1HxJrqPTl2ulo09V10NuqY6NtVJJEyKefnxwyNDS8OAa57hnGCWnydSFkoq3t/EOq8NrrcbLdK+7eqVTDFbmMgjfBFBDA9+ZOYWPA5zMHIJMgbgYyu628VbVcLhRso7Xc5bfUzUUHh5EbY2Pq4WywAtLt/UPa04Hik+UZIDrpNM3pnaSr9XPo8WWXSkFvZU81vWobVPkLNud3uSDnGOverGUNp9ayS8Z6rh/wCp7RHBYIruKvmnJL53RcvZjuG3Oc+XuUyQEREBERAREQEREBERAREQEREBERAREQEREBERBqWsb66HOzR7vAgMZ9vxzD/8n+KybLj1IpccjHJb9I+l931vo8yzAxoduwM4xlGMaxoa0AADAA8iucsxGGHc8bYM8j9sR/Tf53k/leb0r7toAjlxyfp8h9q7vdHv/lef0rILQ7G5oOOvVfQAAwBhTPDC4ddR9Jf3e5Pf3d3lWotYay02JgNvIa2MAxH2v6S76T6PN/Jyt2QCMFfAjYA0Bg8Xu6dysTgxxfaIEUV1VQ/0eXO33B913dx7/QsO2tAnYQab9qRD2vv73d38nzfhWxIBGCuGta3uAHTH4EiTDlERBi3YA22cEwgFn+29x+H0LijAFbWH2rJe3O33XuR7r0+b0YWU4BwIIyCgaASQOp70RyiIiiIiAiIgIiICIiDUVe0uujT4GCaZud/fja/6Z/J834Vtme5XBjYSSWglwwenevodESIwIiIoiIgIiICIiAoHVzRR6i1w2SWNhdbKfAc4DPtUyni1N001YLpVGquVlt9ZPtDeZPTte7A7hkhdNK8Vzn+8cuepWbYwxNEk+t+xDezHqRAdu3xj4jOufN6FIV8QxRwxtiiY1jGNDWtaMAAdAAF9rFp2pmWqxiMCIijQiIgIiICIiAe4qFXm+1Vw0pVVVvZLBPT3mOjIjO9xayrYxx7ugLcn0AqarGo7fRUj530tJDA6okMsxjYGmR56bnY7z6VqlorOZhi9ZnhEshq5QDCLMNiIiAiIgIiICIiAiIgIiICjOv8AWNv0e2xOr6Wpn9Wr1TWeDkBviSzlwa52SPFG05xk+hSZRDidosazZptvql4D6iahpLz9J5nO5BceV3jbu3e664x3FBL1p9bSTRaOvUtO98czLfUOjcwkODhG7BBHlytwh7jlBR194ni38LrHWad1HR11yjs/hM7GiKpbNJDBE50UkjpW7XEvGWt3SHdkDoVh0msr/YLxqFtnqaW8TOvV3ebJyXGoYyOndMybcHZDeYxjMbcHmADxu+3bfqvTNbTXuop7hTmOwVMsFyc5pb4LJG3c/dkdwac5HQjuWXY77Zrzbrdc7fWQyRXKkbVUhd4j5YXAODg12HYwQe7p5UFWaX1Dd79qXSE9ddLbcYW3eUMmoZWOzutsznMkbGS1uHYLcnOCMjIyboHcuilnpJnSMppoJDG7xxG4HaSM9cdxIOV3oNNrjTtJqzSF20zcJp4aS6UklLM+AgSNY8EEtyCM/CCs6y0EVrtFJbYHPdFSQRwRl58YtY0NGfTgKIdoPwn2D9aeB83wj1FqeXys793LOMY65Ug0HzfWTZOdv5nqdT79+d2eU3Oc+XKDdKM1esKCn4lUOhn0tSa6stk1yZMNvKDI5GsLT1zuy4Y6YUmUQrdF+EcXLdrz1SDfArPPbfA+TnfzJWP3793TG3GMdc96CXqE8YbmbRZLRXOuHgEDL/bhUzmblsbEahoeHuyAGkZBz0x3qbLHudVTUNuqa6sdtp6eJ0srtpdhrQSTgd/QFBUmsOIT6nVLLXY7tT19sqo3UszIoo8ASUc0zZo5RIXv6tYNwZs6lu7d3R3TvELUdv0taaCjutuuNF4DaW1F0bG1jbW6WGTfFI57ywv9qjwXkbTL43e0K35NbaUh05aNRm50/qbeJKaC3ztaTz3TnETQAM5JPUHuwc4wVvG1NA81EQnpiYnATsD2+KXdwcPIT6e9BAOFdxuNz1jdq25zUks81itb3Po5eZTvPOrRvYR08ZoaTjPXpkgAqyV1Us0FRAyemljlieMtfG4Oa4egjoV2oInr3Qdq1hdNNXC5VNbDLp26MudI2BzQ2SVvc1+WnLfgwfSpY3oMFUx2j/VH14cJ/AfCtnrwp/COTuxsx13Y+t+HornHcgeRRPRusYtQat1bYGUMlO/TtZDSvldIHCcyQtlDgMeLjdjHVSzyYUR0Voz1u6x1hqD1SFV6462Gq5PJ2eD8uFsW3duO7O3OcDvx6UG8pLHbqWtulbDAWz3RzH1jt7iJC2MRt6E4HitA6LS1GidNxQ2mNnhdB6m07KCkkprhLTvMII2wue1wL25aOhyc93ecyxQbjLp+XUtitdqZDVPjdeaOSWSmJEkDWvLuaCO4sIa7PnAQdlTw60dPW1JqKWZzq1lYDAa6URtFS3bU8uPdhm/dlxaO856ErJquH2m6mK6QyQ1gp7p41TAyvmZFzC5rjKxgdhkm5jXb24ORnvJzX1VZ9dRakp9X3631Fdd6ez3KjjitUnRkbWRbCwkYbJM8Pl7iWgNZ4xZ11Mty1bT1FLabpV6vipp5bs6ijohM6rmjZDSugO57RKWiR8gBeB34dhuQgtes4e6bqi+R0NZFUyVD6h1VBXTRzl74mRSe2NcHYcyNgIzgloPf1XdTaE0zTNDKe2thY2opKljGSvDWvpWNZBgZ6BrWNGO4465Wy0j6q+ta1eru31W8Ch8O24xz9g5mMdMbs93RbRBG4NHW2LiVPrsT1ZuU9pjtToi5vJETJXShwG3O7c4+XGPIpIqmoZ5z2ubnTc6UwDRFM8R7jsDvDZBnHdnHlVsoCIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICrHtAXq62WPQjrVXz0Zrta2yiquU7HNgkL98bvO04GR6FZyj+s6jSlOLR66hQESXWnjtvhcQf/pxJ5OzIOJPdYPTHXqgkA7kIyCFw0g92fwpken8SCsqbhe+W8VFdW3ERQVd2qKq4UkDNzLjTmczU8cpOMFj+pwDlpcwkgrT03DfVcVRpTnPsxisMNvDp4QBPJyIntmZuMW924vO3x2twSC3Pfcu4JkZx1/EgqfgRo272aC13a5WuhspZp2lt76WnLjLUSNO90s4LW7XjO0N8Yjc/r3K2Vxken8SZCDVawv9DpfS9z1Fc+b4DbaV9TUGJu5+xgycDIycBZlprYbla6W4UxcYKmFk0e4YO1zQ4ZHnwQtFxV09U6t4b6h0xRTRQVF0t01JFLKDsY57SAXYBOPgW20xQSWrTlttkz2vkpKSKBzm9zixgaSPR0QbFVldrzdY+0tY7Cyvnba5tMVlTLSh3tb5W1EbWvI84BIz6VZqj9TUaUGvaSlnbQnVDrfK+mLos1Hgoe0SbXY6M3bcjPU4QSBa3VdBNdNL3W2U7mMmq6KaCNzyQ0OexzQSR1xkrY5C5yPT+JBVD+E8zIonRXFj208lJNR0Lm7YKOUTQyVkkbgCSZBF0BADS5+MB5xHtVcPdWvq7heJrfZ6w1VRTwupKRgYyoHqtTzte9rYgQ0RNfvLzI7Jce4lXvkZwm4IIrwy07VadtNwjq4qSmfXXKetbR0bi6CkbIRiNhIbn3O4naBuc7AUrXGR6fxLkkBBGtaa1sulLlYKC7OqBNfriy3UXKi3AzO7txyMD09VJWnIyq74u6EuGsdQaGuFFWU1PHp2/wAV0qGzB2ZWMHVrMD3Xw4CsRucdUA9xVZ8Kb1dbjxQ4n26ur56iktt2pYqKF78tgY6lY5zWjyAuJPwqzFpLDcdOVV7vdLaJKN1xpKhjLqIYtr2ymMFnMOBuOzGD16IN2iEgdFxkZx/gg5XW+CF8zJnRMMkYIY8tGWg4yAfJnA/EuzPw/iQnCAi4yPT+Jc5+H8SCPxaqtEnEOfRjTL6rw2xlyf7V4nIdIYx43n3NPRSBQem0dWR8c6zXpq6c0U+nYrU2nw7miRlQ6UvPTG3Dsd+cqcICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICjnEHRGmteWNtl1TbzXUTKhlSxjZ5IXNlZkNcHRkOBG4+XyqRogjfD7Q+ndCWia06Zo5qSjmnNQ9ktXLUEyENaTukc4gYaOmcKFVXZ04TVNVLUy2CvMssjpHkXutALiSScCXA6lWyiCPa30bYdZ6f9QdRUktTb+YyTlx1MkJ3M9z40bg7y+dajh5wp0ToG5VNw0vbKmkqKmEQyuluFRUAsDt2MSvcB1A6hThEFc6y4JcOtXakqtQ3+0VlTcarZzZI7rVQtO1oa3xGSBo6NHcFJbXo2xW3Q50ZR0ssdl8FkpOSamRz+U/duHMLi/PjHrnI8hUhRBWmleBXDbTGoaO/WWzVkFwon74JH3aqla04LfcvkLT0J7wrLREBQjiHwp0Pr65Ulx1TaZauqo4nQwSxV09O5rHO3Fp5T25GRnqpuiCPes2w+sT1k+CS+ofgfgXI8Jk3cnGNvM3b848uc+lRrRnBPh3pDUlNqGwWisprjTB4ikkutVM0BzS13iSSFp6E94VjIghnEXhho7X9TRz6pt1RWPomPZAYq+en2hxBdnlPbn3I78rO0BojT2hbNLZ9MUc1JRS1BqHMlq5ZyZCGgndI5zsYaOmcKSogqlvZ64VsuTbi2xVwqRPzw71ZrMb927O3m47+uMYU215o6w63sXqJqOklqqAytmMcdTJAd7c4O6Nwd5T0ypAiCEcPOFWidA3Gpr9L22ppJ6qIQzOluFRUBzA7cBiV7gOvlCm6IgKvbrwY4e3PXDtaVVlnN8fUxVTqiO41EbXSx7djjG14YcbW9CMHHVWEiCK8ROH+l9fUdLR6ooZ6uCklMsLYqyanLXEYJzE5pPTyFfHDrhzpTh/FWw6VoJ6SOtcx1QJa2ao3FoIbjmudjo492FLUQVpqngTw01NqCtvt4stZPX1r+ZPIy7VcTXOwBnayQNHQDuCll50fYbtoj1m11LLJZTTx0xhbUyMfy49uwcxrg/psb1zk+XyrfogrrRnBPh3pDUdPqDT9orKa404eI5JLrVTNAc0td4kkhaehPeFmcQ+E+iNe3WnuWqLZU1dTTwciJ0VxqKcBm4uxiJ7QepPU9VOUQaHQukLFoqxMsenKWWloGSPkbHJUyTHc45cd0ji7v9K3yIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIP//Z" alt="Architecture from presentation">
+    <div class="fig-cap">Fig. — Pixel Pipeline Architecture from the original presentation, showing the block diagram and timing.</div>
+  </div>
+
+  <h3>What Flows Through the Pipeline</h3>
+  <p>In raster-scan order, each pixel enters as a <span class="hl">data packet</span> that grows as it passes through stages. At Cache AG the packet contains the pixel's label and coordinates. After Gradient Calc it gains Ix, Iy, It. After Accuracy &amp; Weight it gains qᵢ and wᵢ. This complete packet then splits — the model path consumes (Ix, Iy, It, wᵢ, x, y) for moment accumulation, while the label path consumes (qᵢ, label, neighbor labels) for energy calculation. Throughput: <span class="hl">1 pixel per clock cycle</span> except at region boundaries (~4-cycle context switch).</p>
+
+  <h3>Why Multiple RT and MMT Copies?</h3>
+  <p>The processor contains <span class="hl">3 copies of MMT</span> and <span class="hl">2 copies of RT</span>, all holding identical content but accessed by different blocks simultaneously to avoid multi-port memories:</p>
+
+  <table class="spec">
+    <tr><th>Table</th><th>Accessed By</th><th>Purpose</th></tr>
+    <tr><td>MMT0</td><td>Cache AG</td><td>Read θ to compute warped coordinates for NIC address generation</td></tr>
+    <tr><td>MMT1</td><td>Prediction</td><td>Read θ to warp labels forward for prediction map</td></tr>
+    <tr><td>MMT2</td><td>Moment Calc + Model Calc</td><td>Read for moment coords; written with new θ after inverse</td></tr>
+    <tr><td>RT0</td><td>Cache AG</td><td>Read region validity and corrected labels during raster scan</td></tr>
+    <tr><td>RT1</td><td>Prediction</td><td>Updated during merge/cleanup; synced to RT0 afterward</td></tr>
+  </table>
+
+  <p>After Motion Model Calc writes new θ to MMT2, it synchronizes by copying MMT2 → MMT0 and MMT2 → MMT1. After Prediction updates RT1, it copies RT1 → RT0.</p>
+
+  <h3>External vs Internal Memory</h3>
+  <p>The <span class="hr">external memories</span> (dashed boxes) hold frame-sized data: current/next label maps, prediction map, current/next images in off-chip SRAM/DRAM. The <span class="hg">internal memories</span> (yellow boxes) hold only region-level or row-level data — RT (128 regions), MMT (128 regions), NIC (25 rows), line buffers (1–2 rows), and Gd accumulators. A key advantage: the proposed architecture does <span class="hl">not</span> need internal frame buffers for segmented images — the conventional design required two, but the unified pipeline shares pixel/label reads, eliminating this need entirely.</p>
+</div>
+</section>
+
+<!-- ══════ 1. CACHE AG ══════ -->
+<section id="cache-ag">
+<div class="ct">
+  <div class="sl">Block 1</div>
+  <h2>Cache Address Generator (Cache AG)</h2>
+  <p>The Cache AG is the entry point of the pipeline. It reads labels in <span class="hl">raster scan order</span> from the external current label map, looks up each region's motion model, computes the warped destination coordinates, and generates read addresses for the next-image cache.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <!-- Inputs -->
+      <rect x="5" y="50" width="75" height="40" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="42" y="68" text-anchor="middle" fill="#888" font-size="8.5">Current</text>
+      <text x="42" y="80" text-anchor="middle" fill="#888" font-size="8.5">Label Map</text>
+      <line x1="80" y1="70" x2="110" y2="70" stroke="#555" marker-end="url(#a2)"/>
+
+      <!-- Read label -->
+      <rect x="115" y="45" width="90" height="50" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="160" y="65" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Read Label</text>
+      <text x="160" y="78" text-anchor="middle" fill="#666" font-size="7.5">(raster scan)</text>
+
+      <!-- RT0 lookup -->
+      <line x1="160" y1="95" x2="160" y2="125" stroke="#555" marker-end="url(#a2)"/>
+      <rect x="120" y="130" width="80" height="35" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="160" y="148" text-anchor="middle" fill="#806000" font-size="8.5" font-weight="600">RT0</text>
+      <text x="160" y="159" text-anchor="middle" fill="#999" font-size="7">valid? → correct label</text>
+
+      <line x1="205" y1="70" x2="240" y2="70" stroke="#555" marker-end="url(#a2)"/>
+
+      <!-- MMT0 lookup -->
+      <rect x="245" y="45" width="90" height="50" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="290" y="63" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Read θ</text>
+      <text x="290" y="78" text-anchor="middle" fill="#666" font-size="7.5">from MMT0</text>
+
+      <rect x="250" y="130" width="80" height="35" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="290" y="150" text-anchor="middle" fill="#806000" font-size="8.5" font-weight="600">MMT0</text>
+      <line x1="290" y1="95" x2="290" y2="130" stroke="#b0a050" stroke-dasharray="3,2"/>
+
+      <line x1="335" y1="70" x2="370" y2="70" stroke="#555" marker-end="url(#a2)"/>
+
+      <!-- Compute destination -->
+      <rect x="375" y="35" width="120" height="70" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="435" y="55" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Compute (u,v)</text>
+      <text x="435" y="72" text-anchor="middle" fill="#555" font-size="8">u = a₁+a₂x+a₃y</text>
+      <text x="435" y="85" text-anchor="middle" fill="#555" font-size="8">v = a₄+a₅x+a₆y</text>
+      <text x="435" y="98" text-anchor="middle" fill="#888" font-size="7">→ address gen</text>
+
+      <line x1="495" y1="70" x2="530" y2="70" stroke="#555" marker-end="url(#a2)"/>
+
+      <!-- NIC -->
+      <rect x="535" y="20" width="170" height="100" rx="6" fill="#eef4ff" stroke="#0055d4" stroke-width="1.5"/>
+      <text x="620" y="42" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="600">Next Image Cache (NIC)</text>
+      <text x="620" y="58" text-anchor="middle" fill="#555" font-size="8.5">25 rows (current ± 12)</text>
+      <text x="620" y="73" text-anchor="middle" fill="#555" font-size="8.5">16 memory banks</text>
+      <text x="620" y="88" text-anchor="middle" fill="#555" font-size="8.5">4×4 pixel readout</text>
+      <text x="620" y="103" text-anchor="middle" fill="#555" font-size="8.5">8 bits × 1K words × 16</text>
+
+      <rect x="535" y="130" width="75" height="30" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="572" y="150" text-anchor="middle" fill="#888" font-size="8">Next Image</text>
+      <text x="572" y="160" text-anchor="middle" fill="#888" font-size="7">(ext. mem)</text>
+      <line x1="572" y1="120" x2="572" y2="130" stroke="#aaa" stroke-dasharray="3,2"/>
+
+      <!-- Output -->
+      <line x1="620" y1="120" x2="620" y2="180" stroke="#555" marker-end="url(#a2)"/>
+      <text x="620" y="200" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">→ to Gradient Calc</text>
+      <text x="620" y="215" text-anchor="middle" fill="#888" font-size="7.5">pixel + warped neighbors</text>
+
+      <!-- signal annotations -->
+      <text x="95" y="62" fill="#2a8" font-size="7">label [8b]</text>
+      <text x="213" y="62" fill="#2a8" font-size="7">label</text>
+      <text x="348" y="60" fill="#2a8" font-size="7">θ [7×16b]</text>
+      <text x="505" y="60" fill="#2a8" font-size="7">addr</text>
+    </svg>
+    <div class="bd-cap">Fig. 2 — Cache AG block diagram. Labels are read in raster order, motion models are looked up from MMT0, destination coordinates are computed, and the NIC returns warped pixel neighborhoods.</div>
+  </div>
+
+  <div class="info">
+    <strong>Next Image Cache (NIC):</strong> Stores 25 rows — the current processing row plus 12 rows above and below — to handle the maximum vertical displacement. The 16 memory banks are arranged so that any 4×4 pixel block can be read simultaneously in one cycle, enabling bilinear interpolation at sub-pixel precision.
+  </div>
+
+  <h3>NIC Bank Addressing Scheme</h3>
+  <p>The destination coordinates (x+u, y+v) have fractional parts — the pixel rarely lands exactly on an integer grid position. To perform bilinear interpolation, the circuit needs the 4×4 pixel neighborhood around the destination. The NIC's <span class="hl">16 memory banks</span> (each 8 bits × 1K words) are interleaved so that any aligned 4×4 block maps to 16 distinct banks, enabling single-cycle parallel readout regardless of the fractional position. This is critical for maintaining the 1-pixel-per-cycle throughput.</p>
+
+  <h3>RT Label Correction (Online)</h3>
+  <p>When reading labels from the external current label map, Cache AG also checks the label against <span class="hl">RT0</span>. If a region has been invalidated (e.g., merged into another during the previous frame's prediction), the RT stores the <span class="ha">corrected label</span> — the surviving region's number. Cache AG replaces the invalid label with the corrected one on-the-fly, without needing to rewrite the prediction map. This online correction saves an entire pass over the prediction map, contributing to the ~40% cycle reduction at the bottom hierarchy level.</p>
+
+  <h3>Coordinate Computation Precision</h3>
+  <p>The affine displacement is computed in <span class="hl">fixed-point arithmetic</span>: x coordinates use 14 bits (10 integer + 4 fractional), y coordinates use 13 bits (9 integer + 4 fractional). The motion model parameters a₁, a₃ (translation) use 16 bits with 8 integer + 8 fractional, while a₂, a₃, a₅, a₆ (rotation/scale) use 1 integer + 15 fractional bits — since these represent small per-pixel rates, they need high fractional precision but little integer range.</p>
+</div>
+</section>
+
+<!-- ══════ 2. GRADIENT ══════ -->
+<section id="gradient">
+<div class="ct">
+  <div class="sl">Block 2</div>
+  <h2>Gradient Calculation Circuit</h2>
+  <p>Receives the warped pixel neighborhood from Cache AG, performs <span class="hl">bilinear interpolation</span> at sub-pixel precision, then computes three luminance gradients:</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <rect x="5" y="55" width="85" height="40" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="47" y="72" text-anchor="middle" fill="#446" font-size="8">4×4 pixels</text>
+      <text x="47" y="84" text-anchor="middle" fill="#446" font-size="8">from NIC</text>
+      <line x1="90" y1="75" x2="120" y2="75" stroke="#555" marker-end="url(#a3)"/>
+
+      <rect x="125" y="40" width="130" height="70" rx="6" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="190" y="60" text-anchor="middle" fill="#0055d4" font-size="9.5" font-weight="600">Bilinear Interpolation</text>
+      <text x="190" y="76" text-anchor="middle" fill="#555" font-size="8">Sub-pixel precision</text>
+      <text x="190" y="90" text-anchor="middle" fill="#555" font-size="8">J(x+u, y+v) and neighbors</text>
+      <text x="190" y="102" text-anchor="middle" fill="#888" font-size="7">fractional (x,y) coords</text>
+
+      <line x1="255" y1="75" x2="290" y2="75" stroke="#555" marker-end="url(#a3)"/>
+
+      <rect x="295" y="20" width="140" height="110" rx="6" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="365" y="42" text-anchor="middle" fill="#0055d4" font-size="9.5" font-weight="600">Spatial &amp; Temporal</text>
+      <text x="365" y="55" text-anchor="middle" fill="#0055d4" font-size="9.5" font-weight="600">Gradient</text>
+      <text x="365" y="80" text-anchor="middle" fill="#555" font-size="8.5">Ix = ∂I/∂x  [8 bit]</text>
+      <text x="365" y="95" text-anchor="middle" fill="#555" font-size="8.5">Iy = ∂I/∂y  [8 bit]</text>
+      <text x="365" y="110" text-anchor="middle" fill="#555" font-size="8.5">It = ∂I/∂t  [8 bit]</text>
+      <text x="365" y="123" text-anchor="middle" fill="#888" font-size="7">It clipped to [−128, 127]</text>
+
+      <!-- Current image pixel input -->
+      <rect x="295" y="145" width="80" height="30" rx="3" fill="#eef4ff" stroke="#aac"/>
+      <text x="335" y="164" text-anchor="middle" fill="#446" font-size="8">Current pixel</text>
+      <text x="335" y="174" text-anchor="middle" fill="#446" font-size="7">I(x,y,t)</text>
+      <line x1="335" y1="130" x2="335" y2="145" stroke="#555" stroke-dasharray="3,2"/>
+
+      <!-- Outputs -->
+      <line x1="435" y1="50" x2="480" y2="50" stroke="#555" marker-end="url(#a3)"/>
+      <line x1="435" y1="75" x2="480" y2="75" stroke="#555" marker-end="url(#a3)"/>
+      <line x1="435" y1="100" x2="480" y2="100" stroke="#555" marker-end="url(#a3)"/>
+      <text x="490" y="53" fill="#c44" font-size="8.5" font-weight="600">Ix</text>
+      <text x="490" y="78" fill="#c44" font-size="8.5" font-weight="600">Iy</text>
+      <text x="490" y="103" fill="#c44" font-size="8.5" font-weight="600">It</text>
+      <text x="520" y="78" fill="#888" font-size="7">→ to Accuracy &amp; Weight</text>
+    </svg>
+    <div class="bd-cap">Fig. 3 — Gradient calculation. The 4×4 neighborhood from NIC is bilinearly interpolated at the sub-pixel destination, then spatial (Ix, Iy) and temporal (It) gradients are computed.</div>
+  </div>
+
+  <h3>Bilinear Interpolation</h3>
+  <p>The warped position (x+u, y+v) has a fractional component (fx, fy). The sub-pixel intensity is reconstructed from the four nearest integer-position pixels using:</p>
+  <div class="eq">J(x+u, y+v) ≈ (1-fx)(1-fy)·P₀₀ + fx(1-fy)·P₁₀ + (1-fx)fy·P₀₁ + fx·fy·P₁₁
+<span class="dim">where P₀₀, P₁₀, P₀₁, P₁₁ are the four surrounding pixels from the next image</span></div>
+  <p>This interpolation is also applied to the neighboring pixel positions to generate the values needed for spatial gradient computation. The circuit produces interpolated values at the destination and at positions offset by ±1 in x and y.</p>
+
+  <h3>Spatial Gradient Computation</h3>
+  <p>The spatial gradients Ix and Iy are computed using finite differences of the interpolated next-image pixels. These measure how rapidly brightness changes in the x and y directions at the warped location. The temporal gradient It is the difference between the current-frame pixel I(x,y,t) and the warped next-frame pixel J(x+u, y+v, t+1). All three gradients are quantized to <span class="hl">8-bit signed values</span>, with It clipped to the range [−128, 127] to prevent overflow in downstream multiplications.</p>
+
+  <h3>Current Image Pixel Source</h3>
+  <p>The current image pixel I(x, y, t) is read from external current image memory in raster scan order — the same order as the label map read. Since both are sequential reads, they can share the same external memory access pattern, simplifying the memory controller and reducing external bandwidth requirements.</p>
+</div>
+</section>
+
+<!-- ══════ 3. ACCURACY & WEIGHT ══════ -->
+<section id="accuracy">
+<div class="ct">
+  <div class="sl">Block 3</div>
+  <h2>Motion Accuracy Index &amp; Weight Calculation</h2>
+  <p>Computes the motion accuracy index <span class="hl">qᵢ</span> over a 3×3 neighborhood and the binary weight <span class="hl">wᵢ</span>. The division in qᵢ is implemented via <span class="hl">Newton's method reciprocal</span> with 3 pipelined iterations.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a4" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <!-- Inputs -->
+      <rect x="5" y="40" width="60" height="55" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="35" y="60" text-anchor="middle" fill="#446" font-size="8">Ix, Iy</text>
+      <text x="35" y="73" text-anchor="middle" fill="#446" font-size="8">It, DFD</text>
+      <text x="35" y="86" text-anchor="middle" fill="#446" font-size="7">from Grad.</text>
+      <line x1="65" y1="67" x2="95" y2="67" stroke="#555" marker-end="url(#a4)"/>
+
+      <!-- 2-line buffer -->
+      <rect x="100" y="130" width="85" height="35" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="142" y="148" text-anchor="middle" fill="#806000" font-size="8" font-weight="600">2-Line Buffer</text>
+      <text x="142" y="160" text-anchor="middle" fill="#999" font-size="7">(WB memory)</text>
+      <line x1="142" y1="95" x2="142" y2="130" stroke="#b0a050" stroke-dasharray="3,2"/>
+
+      <!-- 3x3 neighborhood -->
+      <rect x="100" y="35" width="85" height="65" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="142" y="55" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">3×3</text>
+      <text x="142" y="68" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Neighborhood</text>
+      <text x="142" y="82" text-anchor="middle" fill="#666" font-size="7.5">N(i): pixel + 8 neighbors</text>
+      <text x="142" y="92" text-anchor="middle" fill="#666" font-size="7.5">|∇I|, DFD products</text>
+
+      <line x1="185" y1="67" x2="215" y2="67" stroke="#555" marker-end="url(#a4)"/>
+
+      <!-- Numerator -->
+      <rect x="220" y="25" width="120" height="40" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="280" y="42" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Numerator</text>
+      <text x="280" y="55" text-anchor="middle" fill="#555" font-size="7.5">Σ |∇Ij|·DFDθ(j)</text>
+
+      <!-- Denominator -->
+      <rect x="220" y="80" width="120" height="45" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="280" y="97" text-anchor="middle" fill="#0055d4" font-size="9" font-weight="600">Denominator</text>
+      <text x="280" y="112" text-anchor="middle" fill="#555" font-size="7.5">max(Σ|∇I|², 9σ²)</text>
+
+      <!-- Newton reciprocal -->
+      <line x1="340" y1="102" x2="375" y2="102" stroke="#555" marker-end="url(#a4)"/>
+      <rect x="380" y="75" width="140" height="60" rx="6" fill="#fef0e0" stroke="#d09040" stroke-width="1.3"/>
+      <text x="450" y="95" text-anchor="middle" fill="#b06020" font-size="9" font-weight="600">Newton Reciprocal</text>
+      <text x="450" y="110" text-anchor="middle" fill="#666" font-size="8">3 iterations (pipelined)</text>
+      <text x="450" y="123" text-anchor="middle" fill="#666" font-size="8">1/denom → multiply</text>
+
+      <!-- Multiply -->
+      <line x1="340" y1="45" x2="540" y2="45" stroke="#555"/>
+      <line x1="520" y1="102" x2="545" y2="102" stroke="#555"/>
+      <rect x="545" y="50" width="70" height="70" rx="5" fill="#fff" stroke="#0055d4" stroke-width="1.3"/>
+      <text x="580" y="75" text-anchor="middle" fill="#0055d4" font-size="10" font-weight="700">×</text>
+      <text x="580" y="90" text-anchor="middle" fill="#555" font-size="8">num × (1/den)</text>
+      <text x="580" y="105" text-anchor="middle" fill="#555" font-size="7.5">= qᵢ [5 bits]</text>
+      <line x1="540" y1="45" x2="545" y2="68" stroke="#555"/>
+
+      <!-- Threshold -->
+      <line x1="615" y1="85" x2="645" y2="85" stroke="#555" marker-end="url(#a4)"/>
+      <rect x="650" y="60" width="60" height="50" rx="5" fill="#fff" stroke="#c44" stroke-width="1.3"/>
+      <text x="680" y="80" text-anchor="middle" fill="#c44" font-size="9" font-weight="600">|qᵢ|</text>
+      <text x="680" y="92" text-anchor="middle" fill="#c44" font-size="9" font-weight="600">&lt; η?</text>
+      <text x="680" y="103" text-anchor="middle" fill="#555" font-size="7.5">→ wᵢ [1 bit]</text>
+
+      <!-- Outputs -->
+      <text x="650" y="140" fill="#c44" font-size="9" font-weight="600">Outputs: qᵢ [5b], wᵢ [1b]</text>
+      <text x="650" y="155" fill="#888" font-size="7.5">→ to Gradient Moment &amp; Region Labeling</text>
+    </svg>
+    <div class="bd-cap">Fig. 4 — Accuracy index and weight calculation. A 3×3 neighborhood (via 2-line buffer) computes qᵢ using Newton's-method reciprocal division, then thresholds to produce binary wᵢ.</div>
+  </div>
+
+  <h3 id="accuracy-newton">Newton's Method Reciprocal (Pipelined)</h3>
+  <p>The division qᵢ = numerator / denominator is computed as numerator × (1/denominator). The reciprocal 1/D is found via Newton's method: starting from an initial guess Y₀, iterate <span class="hl">Yₙ₊₁ = Yₙ(2 − D·Yₙ)</span>. Three iterations converge to sufficient precision. Each iteration is one pipeline stage, giving a 3-stage pipeline with full throughput.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 680 130" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="an" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+      <rect x="5" y="35" width="75" height="40" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="42" y="55" text-anchor="middle" fill="#446" font-size="8.5">Denom D</text>
+      <text x="42" y="67" text-anchor="middle" fill="#446" font-size="7">initial Y₀</text>
+      <line x1="80" y1="55" x2="110" y2="55" stroke="#555" marker-end="url(#an)"/>
+
+      <rect x="115" y="25" width="130" height="60" rx="5" fill="#fef0e0" stroke="#d09040" stroke-width="1.3"/>
+      <text x="180" y="45" text-anchor="middle" fill="#b06020" font-size="9.5" font-weight="600">Stage 1</text>
+      <text x="180" y="60" text-anchor="middle" fill="#555" font-size="8">Y₁ = Y₀(2 − D·Y₀)</text>
+      <text x="180" y="75" text-anchor="middle" fill="#888" font-size="7">1 multiply + 1 sub + 1 multiply</text>
+      <line x1="245" y1="55" x2="270" y2="55" stroke="#555" marker-end="url(#an)"/>
+
+      <rect x="275" y="25" width="130" height="60" rx="5" fill="#fef0e0" stroke="#d09040" stroke-width="1.3"/>
+      <text x="340" y="45" text-anchor="middle" fill="#b06020" font-size="9.5" font-weight="600">Stage 2</text>
+      <text x="340" y="60" text-anchor="middle" fill="#555" font-size="8">Y₂ = Y₁(2 − D·Y₁)</text>
+      <text x="340" y="75" text-anchor="middle" fill="#888" font-size="7">refines precision</text>
+      <line x1="405" y1="55" x2="430" y2="55" stroke="#555" marker-end="url(#an)"/>
+
+      <rect x="435" y="25" width="130" height="60" rx="5" fill="#fef0e0" stroke="#d09040" stroke-width="1.3"/>
+      <text x="500" y="45" text-anchor="middle" fill="#b06020" font-size="9.5" font-weight="600">Stage 3</text>
+      <text x="500" y="60" text-anchor="middle" fill="#555" font-size="8">Y₃ = Y₂(2 − D·Y₂)</text>
+      <text x="500" y="75" text-anchor="middle" fill="#888" font-size="7">final reciprocal ≈ 1/D</text>
+      <line x1="565" y1="55" x2="595" y2="55" stroke="#555" marker-end="url(#an)"/>
+
+      <rect x="600" y="35" width="65" height="40" rx="4" fill="#e8f4e8" stroke="#a0d8a0"/>
+      <text x="632" y="55" text-anchor="middle" fill="#2a7a2a" font-size="9" font-weight="600">1/D</text>
+      <text x="632" y="67" text-anchor="middle" fill="#888" font-size="7">→ multiply</text>
+
+      <text x="340" y="110" text-anchor="middle" fill="#0055d4" font-size="8.5" font-weight="600">Pipeline: all 3 stages active simultaneously on different pixels</text>
+    </svg>
+    <div class="bd-cap">Fig. 4b — Newton's method reciprocal pipeline. Three stages execute concurrently on three consecutive pixels, maintaining 1-pixel-per-cycle throughput.</div>
+  </div>
+
+  <h3>The 9σ² Denominator Floor</h3>
+  <p>In textureless areas (flat walls, sky, uniform road), the spatial gradient magnitude |∇I| is very small. Without protection, dividing by a near-zero denominator would produce wildly unreliable qᵢ values. The floor <span class="hl">max(Σ|∇I|², 9σ²)</span> ensures the denominator is at least 9σ² — where σ is the assumed noise standard deviation. The factor 9 comes from the 3×3 neighborhood (9 pixels). This means: if the total gradient energy in the neighborhood is less than what noise alone would produce, the circuit treats the measurement as unreliable and clamps the denominator, producing a moderate qᵢ that the threshold can handle gracefully.</p>
+
+  <h3>3×3 Neighborhood via Line Buffers</h3>
+  <p>Computing qᵢ requires access to the current pixel and its 8 neighbors — the row above, current row, and row below. Since the pipeline processes pixels in raster scan order, the previous row's data must be stored. The <span class="hl">WB (Weight Buffer)</span> consists of 2 line buffers (32 bits × 1K words × 2), each storing one row of gradient and DFD products. As each new pixel arrives, its products are written to the buffer and the corresponding values from the two previous rows are read out, forming the complete 3×3 window.</p>
+
+  <table class="spec">
+    <tr><th>Signal</th><th>Width</th><th>Notes</th></tr>
+    <tr><td>qᵢ</td><td>5 bits</td><td>1 integer + 4 fractional</td></tr>
+    <tr><td>wᵢ</td><td>1 bit</td><td>Binary: 0 (outlier) or 1 (inlier)</td></tr>
+    <tr><td>Ix, Iy</td><td>8 bits</td><td>Spatial gradients</td></tr>
+    <tr><td>It</td><td>8 bits</td><td>Temporal gradient, clipped [−128, 127]</td></tr>
+  </table>
+</div>
+</section>
+
+<!-- ══════ 4. GRADIENT MOMENT ══════ -->
+<section id="moment">
+<div class="ct">
+  <div class="sl">Block 4</div>
+  <h2>Gradient Image Moment Calculation</h2>
+  <p>Accumulates the <span class="hl">G matrix</span> (7×7 symmetric, 28 unique elements) and <span class="hl">d vector</span> (7 elements) for each region. All 35 elements are computed in parallel for each pixel. The circuit references MMT2 to compute warped coordinates for the moment products.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a5" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <rect x="5" y="50" width="70" height="55" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="40" y="68" text-anchor="middle" fill="#446" font-size="8">Ix, Iy, It</text>
+      <text x="40" y="80" text-anchor="middle" fill="#446" font-size="8">wᵢ, (x,y)</text>
+      <text x="40" y="92" text-anchor="middle" fill="#446" font-size="7">from prev. stages</text>
+      <line x1="75" y1="77" x2="105" y2="77" stroke="#555" marker-end="url(#a5)"/>
+
+      <!-- Form chi vector -->
+      <rect x="110" y="40" width="110" height="75" rx="5" fill="#fff" stroke="#2a8868" stroke-width="1.3"/>
+      <text x="165" y="58" text-anchor="middle" fill="#2a8868" font-size="9" font-weight="600">Form χᵢ Vector</text>
+      <text x="165" y="74" text-anchor="middle" fill="#555" font-size="7.5">χᵢ = (Ix, xIx, yIx,</text>
+      <text x="165" y="86" text-anchor="middle" fill="#555" font-size="7.5">Iy, xIy, yIy, 1)</text>
+      <text x="165" y="100" text-anchor="middle" fill="#888" font-size="7">if wᵢ=0 → skip</text>
+      <line x1="220" y1="77" x2="255" y2="77" stroke="#555" marker-end="url(#a5)"/>
+
+      <!-- Accumulate -->
+      <rect x="260" y="30" width="150" height="95" rx="6" fill="#fff" stroke="#2a8868" stroke-width="1.5"/>
+      <text x="335" y="50" text-anchor="middle" fill="#2a8868" font-size="10" font-weight="600">Parallel Accumulate</text>
+      <text x="335" y="68" text-anchor="middle" fill="#555" font-size="8">G += wᵢ · χᵢᵀ · χᵢ</text>
+      <text x="335" y="82" text-anchor="middle" fill="#555" font-size="8">d += wᵢ · χᵢᵀ · (−It)</text>
+      <text x="335" y="98" text-anchor="middle" fill="#555" font-size="8">28 + 7 = 35 accumulators</text>
+      <text x="335" y="112" text-anchor="middle" fill="#888" font-size="7">[32-bit fixed-point each]</text>
+
+      <!-- Gd memory -->
+      <rect x="280" y="145" width="110" height="40" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="335" y="162" text-anchor="middle" fill="#806000" font-size="8.5" font-weight="600">Gd Memory</text>
+      <text x="335" y="175" text-anchor="middle" fill="#999" font-size="7">32b × 512 words × 8 banks</text>
+      <line x1="335" y1="125" x2="335" y2="145" stroke="#b0a050" stroke-dasharray="3,2"/>
+
+      <!-- Context switch annotation -->
+      <rect x="280" y="198" width="110" height="25" rx="3" fill="#ffe8e0" stroke="#e0b8a0"/>
+      <text x="335" y="214" text-anchor="middle" fill="#a03020" font-size="7.5" font-weight="600">Context switch: ~4 cycles</text>
+
+      <!-- Output -->
+      <line x1="410" y1="77" x2="445" y2="77" stroke="#555" marker-end="url(#a5)"/>
+      <rect x="450" y="50" width="100" height="55" rx="5" fill="#fff" stroke="#2a8868" stroke-width="1.3"/>
+      <text x="500" y="70" text-anchor="middle" fill="#2a8868" font-size="9" font-weight="600">G [7×7]</text>
+      <text x="500" y="85" text-anchor="middle" fill="#2a8868" font-size="9" font-weight="600">d [7×1]</text>
+      <text x="500" y="98" text-anchor="middle" fill="#888" font-size="7">per region, after full scan</text>
+
+      <line x1="550" y1="77" x2="585" y2="77" stroke="#555" marker-end="url(#a5)"/>
+      <text x="595" y="75" fill="#2a8868" font-size="9" font-weight="600">→ Motion</text>
+      <text x="595" y="90" fill="#2a8868" font-size="9" font-weight="600">Model Calc</text>
+
+      <!-- MMT2 -->
+      <rect x="110" y="145" width="60" height="30" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="140" y="164" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">MMT2</text>
+    </svg>
+    <div class="bd-cap">Fig. 5 — Gradient moment calculation. 35 accumulators run in parallel for each pixel. At region boundaries, G/d are saved to Gd memory and the next region's values are restored (~4 cycle stall).</div>
+  </div>
+
+  <h3 id="moment-ctx">Context Switching at Region Boundaries</h3>
+  <p>When the raster scan crosses from one region to another, the current region's 35 accumulator values (G matrix + d vector) must be <span class="hl">saved to Gd memory</span> and the next region's values <span class="hl">restored from Gd memory</span>. This context switch takes approximately <span class="hr">4 clock cycles</span> — the only pipeline stall in normal operation. The Gd memory has 8 banks × 512 words × 32 bits to store all regions' accumulator states.</p>
+
+  <h3>The 28 Unique G Matrix Elements</h3>
+  <p>G is a 7×7 symmetric matrix, so only the upper triangle (including diagonal) needs to be stored: 7 + 6 + 5 + 4 + 3 + 2 + 1 = <span class="hl">28 unique elements</span>. Each element is a sum of weighted gradient products over all pixels in the region. Examples of what these elements contain:</p>
+  <div class="eq">G[0][0] = Σ wᵢ · Ix² <span class="dim">         // sum of squared horizontal gradients</span>
+G[0][1] = Σ wᵢ · x·Ix²  <span class="dim">       // gradient-coordinate cross moment</span>
+G[0][3] = Σ wᵢ · Ix·Iy  <span class="dim">       // horizontal-vertical gradient cross term</span>
+G[1][1] = Σ wᵢ · x²·Ix² <span class="dim">      // can grow very large for big regions</span>
+d[0]    = Σ wᵢ · Ix·(−It) <span class="dim">     // gradient-temporal product</span></div>
+  <p>All 35 accumulators operate <span class="hl">in parallel</span> — each pixel contributes to all elements simultaneously. This parallel structure is key to maintaining the 1-pixel-per-cycle throughput.</p>
+
+  <h3>Overflow Prevention via Adaptive Rounding</h3>
+  <p>Elements like x²·Ix² can grow extremely large when accumulated over many pixels (a 640-pixel-wide region contributes x values up to 640). To prevent overflow within the 32-bit fixed-point accumulators, the circuit applies <span class="ha">adaptive rounding based on the region's pixel count</span>. As the accumulator approaches its capacity, less-significant bits are shifted out. This maintains numerical stability without needing wider (and more expensive) accumulators.</p>
+
+  <h3>Context Switch Flow</h3>
+  <p>When a new label is encountered during raster scan:</p>
+  <div class="eq">1. Current region's G[28] + d[7] → write to Gd memory  <span class="dim">(35 values saved)</span>
+2. New region's G[28] + d[7] ← read from Gd memory      <span class="dim">(35 values loaded)</span>
+3. Resume pixel accumulation for new region               <span class="dim">(~4 cycles total)</span></div>
+  <p>If the next pixel belongs to the same region as the previous (no boundary crossing), the accumulation continues without stall. Region boundaries in typical images represent a small fraction of total pixels, so the average throughput remains close to 1 pixel/cycle.</p>
+</div>
+</section>
+
+<!-- ══════ 5. REGION LABELING ══════ -->
+<section id="labeling">
+<div class="ct">
+  <div class="sl">Block 5</div>
+  <h2>Region Labeling Circuit</h2>
+  <p>The unified boundary update + new region detection circuit. Evaluates the <span class="hl">MRF energy function U = U₁+U₂+U₃</span> for each candidate label and picks the minimum.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a6" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <rect x="5" y="50" width="65" height="50" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="37" y="68" text-anchor="middle" fill="#446" font-size="8">qᵢ [5b]</text>
+      <text x="37" y="80" text-anchor="middle" fill="#446" font-size="8">label</text>
+      <text x="37" y="92" text-anchor="middle" fill="#446" font-size="7">neighbors</text>
+      <line x1="70" y1="75" x2="100" y2="75" stroke="#555" marker-end="url(#a6)"/>
+
+      <!-- Line buffer -->
+      <rect x="5" y="130" width="80" height="30" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="45" y="148" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">Line Buffer (LB)</text>
+      <text x="45" y="158" text-anchor="middle" fill="#999" font-size="6.5">8b+16b × 1K</text>
+
+      <!-- Boundary check -->
+      <rect x="105" y="40" width="90" height="70" rx="5" fill="#fff" stroke="#b05a28" stroke-width="1.3"/>
+      <text x="150" y="58" text-anchor="middle" fill="#b05a28" font-size="9" font-weight="600">Boundary</text>
+      <text x="150" y="71" text-anchor="middle" fill="#b05a28" font-size="9" font-weight="600">Check</text>
+      <text x="150" y="88" text-anchor="middle" fill="#555" font-size="7.5">neighbors same?</text>
+      <text x="150" y="100" text-anchor="middle" fill="#555" font-size="7.5">→ BU or NRD</text>
+
+      <line x1="195" y1="75" x2="225" y2="55" stroke="#555" marker-end="url(#a6)"/>
+      <line x1="195" y1="75" x2="225" y2="95" stroke="#555" marker-end="url(#a6)"/>
+
+      <!-- U1 calc -->
+      <rect x="230" y="25" width="90" height="40" rx="4" fill="#fff" stroke="#b05a28" stroke-width="1.2"/>
+      <text x="275" y="42" text-anchor="middle" fill="#b05a28" font-size="9" font-weight="600">U₁ Calc</text>
+      <text x="275" y="55" text-anchor="middle" fill="#555" font-size="7.5">motion fit (qᵢ)</text>
+
+      <!-- U2 calc -->
+      <rect x="230" y="75" width="90" height="40" rx="4" fill="#fff" stroke="#b05a28" stroke-width="1.2"/>
+      <text x="275" y="92" text-anchor="middle" fill="#b05a28" font-size="9" font-weight="600">U₂ Calc</text>
+      <text x="275" y="105" text-anchor="middle" fill="#555" font-size="7.5">spatial (neighbors)</text>
+
+      <!-- U3 calc -->
+      <rect x="230" y="125" width="90" height="40" rx="4" fill="#fff" stroke="#b05a28" stroke-width="1.2"/>
+      <text x="275" y="142" text-anchor="middle" fill="#b05a28" font-size="9" font-weight="600">U₃ Calc</text>
+      <text x="275" y="155" text-anchor="middle" fill="#555" font-size="7.5">temporal (pred.)</text>
+
+      <!-- Sum -->
+      <line x1="320" y1="45" x2="355" y2="85" stroke="#555"/>
+      <line x1="320" y1="95" x2="355" y2="85" stroke="#555"/>
+      <line x1="320" y1="145" x2="355" y2="85" stroke="#555"/>
+      <rect x="360" y="55" width="80" height="60" rx="5" fill="#fff" stroke="#b05a28" stroke-width="1.5"/>
+      <text x="400" y="78" text-anchor="middle" fill="#b05a28" font-size="10" font-weight="700">Σ</text>
+      <text x="400" y="93" text-anchor="middle" fill="#555" font-size="8">U=U₁+U₂+U₃</text>
+      <text x="400" y="106" text-anchor="middle" fill="#555" font-size="7.5">[9-bit energy]</text>
+
+      <!-- Per candidate -->
+      <text x="400" y="130" text-anchor="middle" fill="#888" font-size="7">repeat for each candidate label</text>
+
+      <line x1="440" y1="85" x2="475" y2="85" stroke="#555" marker-end="url(#a6)"/>
+
+      <!-- Min select -->
+      <rect x="480" y="55" width="80" height="60" rx="5" fill="#fff" stroke="#c44" stroke-width="1.5"/>
+      <text x="520" y="78" text-anchor="middle" fill="#c44" font-size="10" font-weight="700">min</text>
+      <text x="520" y="93" text-anchor="middle" fill="#555" font-size="8">Select label</text>
+      <text x="520" y="106" text-anchor="middle" fill="#555" font-size="7.5">with lowest U</text>
+
+      <line x1="560" y1="85" x2="595" y2="85" stroke="#555" marker-end="url(#a6)"/>
+
+      <!-- U2 correction -->
+      <rect x="480" y="135" width="80" height="30" rx="3" fill="#ffe8e0" stroke="#e0b8a0"/>
+      <text x="520" y="150" text-anchor="middle" fill="#a03020" font-size="7.5" font-weight="600">U₂ correction</text>
+      <text x="520" y="161" text-anchor="middle" fill="#888" font-size="6.5">if left label changed</text>
+
+      <!-- Output -->
+      <rect x="600" y="65" width="100" height="40" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="650" y="82" text-anchor="middle" fill="#888" font-size="9">Next Label</text>
+      <text x="650" y="95" text-anchor="middle" fill="#888" font-size="9">Map (ext.)</text>
+    </svg>
+    <div class="bd-cap">Fig. 6 — Region labeling circuit. Boundary check decides BU vs NRD mode. Three energy terms are computed per candidate label, summed, and the minimum-energy label is selected. U₂ correction handles left-neighbor changes on-the-fly.</div>
+  </div>
+
+  <h3>Boundary vs Interior Decision</h3>
+  <p>For each pixel, the circuit examines the labels of the 4 cardinal neighbors (up, down, left, right) using the <span class="hl">Line Buffer (LB)</span> to access the row above. If any neighbor has a different label from the current pixel, it is classified as a <span class="ha">boundary pixel</span> → boundary update mode (evaluate candidate labels from adjacent regions). If all neighbors share the same label, it is an <span class="hg">interior pixel</span> → new region detection mode (test whether motion fits the current region or should be flagged as "mobile").</p>
+
+  <h3>Candidate Label Enumeration</h3>
+  <p>For boundary pixels, the candidate labels are the distinct labels found among the neighbors — typically 2, occasionally 3 at triple junctions. Each candidate requires a separate energy evaluation (U₁+U₂+U₃), so the pipeline stalls for the number of candidates minus one. The cycle count analysis assumes an average of <span class="hl">2 candidate labels per boundary pixel</span>. For interior pixels, there are always exactly 2 candidates: "keep current label" (static) vs "assign new region" (mobile).</p>
+
+  <h3>U₂ Correction Mechanism</h3>
+  <p>The energy term U₂ depends on neighbor labels, including the <span class="hl">left neighbor</span> — which may have just been relabeled by this very circuit one cycle earlier. If the left neighbor's label changed in the current pass, the U₂ contribution from that direction must be corrected. The circuit detects this condition and applies an on-the-fly correction to U₂ without needing to re-evaluate the entire neighborhood. This is essential for correct single-pass operation.</p>
+
+  <h3>Line Buffer for Neighbor Access</h3>
+  <p>The LB stores the labels and accuracy indices from the previous row (8-bit label × 1K words + 16-bit data × 1K words). Combined with the current pixel and a register holding the left neighbor, this provides the full neighborhood context needed for energy computation in a single raster scan pass.</p>
+</div>
+</section>
+
+<!-- ══════ 6. MOTION MODEL CALC ══════ -->
+<section id="model">
+<div class="ct">
+  <div class="sl">Block 6</div>
+  <h2>Motion Model Calculation</h2>
+  <p>After a complete hierarchy-level image scan, this block computes <span class="hl">G⁻¹</span> via Gauss-Jordan elimination for every active region, then multiplies <span class="hl">θ = G⁻¹·d</span>.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a7" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <rect x="5" y="50" width="80" height="50" rx="4" fill="#eef4ff" stroke="#aac"/>
+      <text x="45" y="68" text-anchor="middle" fill="#446" font-size="8">G [7×7]</text>
+      <text x="45" y="82" text-anchor="middle" fill="#446" font-size="8">d [7×1]</text>
+      <text x="45" y="92" text-anchor="middle" fill="#446" font-size="7">from Gd mem</text>
+      <line x1="85" y1="75" x2="115" y2="75" stroke="#555" marker-end="url(#a7)"/>
+
+      <!-- Inverse matrix -->
+      <rect x="120" y="30" width="180" height="90" rx="6" fill="#fff" stroke="#2a8868" stroke-width="1.5"/>
+      <text x="210" y="50" text-anchor="middle" fill="#2a8868" font-size="10" font-weight="600">Inverse Matrix G⁻¹</text>
+      <text x="210" y="66" text-anchor="middle" fill="#555" font-size="8.5">Gauss-Jordan elimination</text>
+      <text x="210" y="80" text-anchor="middle" fill="#555" font-size="8.5">Floating-point arithmetic</text>
+      <text x="210" y="94" text-anchor="middle" fill="#555" font-size="8.5">32b mantissa + 8b exponent</text>
+      <text x="210" y="108" text-anchor="middle" fill="#888" font-size="7.5">444 cycles per region</text>
+
+      <line x1="300" y1="75" x2="335" y2="75" stroke="#555" marker-end="url(#a7)"/>
+
+      <!-- Multiply theta -->
+      <rect x="340" y="40" width="120" height="70" rx="6" fill="#fff" stroke="#2a8868" stroke-width="1.5"/>
+      <text x="400" y="62" text-anchor="middle" fill="#2a8868" font-size="10" font-weight="600">θ = G⁻¹ · d</text>
+      <text x="400" y="80" text-anchor="middle" fill="#555" font-size="8.5">Matrix-vector multiply</text>
+      <text x="400" y="94" text-anchor="middle" fill="#555" font-size="8.5">7 parameters output</text>
+      <text x="400" y="106" text-anchor="middle" fill="#888" font-size="7.5">57 cycles per region</text>
+
+      <line x1="460" y1="75" x2="495" y2="75" stroke="#555" marker-end="url(#a7)"/>
+
+      <!-- Write to MMT -->
+      <rect x="500" y="45" width="90" height="60" rx="5" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="545" y="65" text-anchor="middle" fill="#806000" font-size="9" font-weight="600">Write θ</text>
+      <text x="545" y="80" text-anchor="middle" fill="#555" font-size="8">→ MMT2</text>
+      <text x="545" y="93" text-anchor="middle" fill="#555" font-size="8">then sync to</text>
+      <text x="545" y="103" text-anchor="middle" fill="#555" font-size="8">MMT0, MMT1</text>
+
+      <!-- Pivot reciprocal (parallel) -->
+      <rect x="120" y="140" width="180" height="40" rx="4" fill="#fef0e0" stroke="#d09040"/>
+      <text x="210" y="158" text-anchor="middle" fill="#b06020" font-size="8.5" font-weight="600">Pivot Reciprocal (parallel)</text>
+      <text x="210" y="172" text-anchor="middle" fill="#888" font-size="7.5">Newton 3 iter, computed during prev. pivot elimination</text>
+    </svg>
+    <div class="bd-cap">Fig. 7 — Motion model calculation. G⁻¹ is computed via Gauss-Jordan (444 cycles/region), then θ = G⁻¹·d (57 cycles/region). The pivot reciprocal is pre-computed in parallel to hide latency.</div>
+  </div>
+
+  <h3 id="inverse">Gauss-Jordan Inverse Matrix</h3>
+  <p>Unlike the conventional design which computed 7 elements in parallel per column, this circuit uses a <span class="hl">pipelined serial approach</span> — computing elements one at a time but streaming them through a pipeline multiplier. Two multipliers in the diagram are actually shared as one physical unit. Numbers are represented in <span class="hl">40-bit floating-point</span> (32-bit mantissa, 8-bit exponent).</p>
+
+  <h4>Elimination Process</h4>
+  <p>Gauss-Jordan works by processing each of the 7 pivot rows in sequence. For each pivot row k, the circuit: (1) divides the pivot row by the diagonal element G[k][k] (using the pre-computed reciprocal), (2) for every other row i ≠ k, subtracts G[i][k] × (normalized pivot row) from row i. This requires processing all 7 rows × up to 14 elements (the augmented [G|I] matrix). With pipelined multipliers, the 444 cycles per region break down to roughly 63 cycles per pivot, covering the 7×7 augmented matrix operations.</p>
+
+  <h4>Why Floating-Point?</h4>
+  <p>During accumulation (in Gradient Moment), elements are 32-bit fixed-point because the operations are simple additions and the range is bounded by the image size. But during Gauss-Jordan elimination, intermediate values can span a very wide dynamic range (products and quotients of already-large sums). Fixed-point would require impractically wide datapaths. The 40-bit floating-point format (32b mantissa + 8b exponent) provides sufficient range and precision while keeping the multiplier hardware compact.</p>
+
+  <h3 id="reciprocal">Pivot Reciprocal via Newton's Method</h3>
+  <p>Each Gauss-Jordan elimination step requires dividing by the diagonal element (pivot). The reciprocal of the <em>next</em> pivot is computed <span class="hl">in parallel</span> with the current elimination step, using Newton's method with 3 iterations. This parallelism hides the reciprocal latency entirely.</p>
+
+  <h4>Find-First-One (FF1) for Initial Approximation</h4>
+  <p>Newton's method needs a good initial guess to converge in just 3 iterations. The FF1 circuit scans the input integer A to find the position of the most significant '1' bit. This bit position gives the approximate magnitude, from which the initial guess Y₀ ≈ 2^(−MSB_position) is derived. The output is already in floating-point form: the mantissa Y' and exponent p. With this initial approximation, 3 Newton iterations achieve the full precision needed for the 32-bit mantissa.</p>
+
+  <h4>MMT Synchronization After Model Update</h4>
+  <p>After computing θ = G⁻¹·d for all active regions (57 cycles per region for the matrix-vector multiply), the new motion models are written to MMT2. The circuit then copies the entire MMT2 content to MMT0 and MMT1, ensuring all three copies are synchronized before the next hierarchy-level iteration begins. This copy happens once per hierarchy-level image scan and takes a fixed number of cycles proportional to the number of active regions.</p>
+</div>
+</section>
+
+<!-- ══════ 7. PREDICTION ══════ -->
+<section id="prediction">
+<div class="ct">
+  <div class="sl">Block 7</div>
+  <h2>Region Prediction Circuit</h2>
+  <p>Runs <span class="hl">once per frame</span> after all hierarchy iterations. Warps labels forward using each region's motion model, merges fragmented new regions, counts pixel areas, and deletes tiny regions.</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 185" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <defs><marker id="a8" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#555"/></marker></defs>
+
+      <rect x="5" y="50" width="80" height="50" rx="4" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="45" y="68" text-anchor="middle" fill="#806000" font-size="8.5" font-weight="600">MMT1</text>
+      <text x="45" y="82" text-anchor="middle" fill="#999" font-size="7.5">motion models</text>
+      <text x="45" y="92" text-anchor="middle" fill="#999" font-size="7.5">per region</text>
+      <line x1="85" y1="75" x2="115" y2="75" stroke="#555" marker-end="url(#a8)"/>
+
+      <rect x="120" y="35" width="115" height="80" rx="6" fill="#fff" stroke="#66a" stroke-width="1.5"/>
+      <text x="177" y="55" text-anchor="middle" fill="#66a" font-size="10" font-weight="600">Warp Labels</text>
+      <text x="177" y="72" text-anchor="middle" fill="#555" font-size="8">Read label (x,y)</text>
+      <text x="177" y="85" text-anchor="middle" fill="#555" font-size="8">Compute (x+u, y+v)</text>
+      <text x="177" y="98" text-anchor="middle" fill="#555" font-size="8">Write label at dest</text>
+      <text x="177" y="110" text-anchor="middle" fill="#888" font-size="7">handle occlusion</text>
+      <line x1="235" y1="75" x2="265" y2="75" stroke="#555" marker-end="url(#a8)"/>
+
+      <rect x="270" y="40" width="115" height="70" rx="6" fill="#fff" stroke="#66a" stroke-width="1.3"/>
+      <text x="327" y="60" text-anchor="middle" fill="#66a" font-size="9.5" font-weight="600">Merge Regions</text>
+      <text x="327" y="76" text-anchor="middle" fill="#555" font-size="8">Adjacent new regions</text>
+      <text x="327" y="89" text-anchor="middle" fill="#555" font-size="8">from same parent</text>
+      <text x="327" y="102" text-anchor="middle" fill="#555" font-size="8">→ update RT1</text>
+      <line x1="385" y1="75" x2="415" y2="75" stroke="#555" marker-end="url(#a8)"/>
+
+      <rect x="420" y="40" width="115" height="70" rx="6" fill="#fff" stroke="#66a" stroke-width="1.3"/>
+      <text x="477" y="60" text-anchor="middle" fill="#66a" font-size="9.5" font-weight="600">Count &amp; Clean</text>
+      <text x="477" y="76" text-anchor="middle" fill="#555" font-size="8">Count pixels/region</text>
+      <text x="477" y="89" text-anchor="middle" fill="#555" font-size="8">Delete tiny regions</text>
+      <text x="477" y="102" text-anchor="middle" fill="#555" font-size="8">RT1 → sync → RT0</text>
+      <line x1="535" y1="75" x2="565" y2="75" stroke="#555" marker-end="url(#a8)"/>
+
+      <rect x="570" y="50" width="100" height="50" rx="4" fill="none" stroke="#aaa" stroke-dasharray="4,3"/>
+      <text x="620" y="70" text-anchor="middle" fill="#888" font-size="9">Prediction</text>
+      <text x="620" y="85" text-anchor="middle" fill="#888" font-size="9">Map (ext.)</text>
+
+      <rect x="270" y="130" width="60" height="25" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="300" y="147" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">RT1</text>
+      <rect x="345" y="130" width="60" height="25" rx="3" fill="#fff8e0" stroke="#e0d8a0"/>
+      <text x="375" y="147" text-anchor="middle" fill="#806000" font-size="7.5" font-weight="600">PB</text>
+    </svg>
+    <div class="bd-cap">Fig. 8 — Region prediction. Labels are warped forward, fragmented new regions are merged via RT1, pixel counts determine if regions are too small to keep. Results sync to RT0 for the next frame.</div>
+  </div>
+
+  <h3>Label Warping Process</h3>
+  <p>The circuit reads each pixel's label from the current label map, looks up its region's motion model from MMT1, computes the destination position (x+u, y+v), and writes the label to that position in the prediction map. Processing is in raster scan order, and when two labels map to the same destination (<span class="hr">occlusion</span>), the later-written label wins — effectively giving priority to the foreground. Positions that receive no label become <span class="ha">uncovered areas</span> and are initialized with a special "uncover" label.</p>
+
+  <h3>Region Merging Logic</h3>
+  <p>During new region detection (Step 3 of the algorithm), a single physical object may be split into multiple new regions if it spans non-adjacent pixel clusters. During prediction, as the raster scan progresses, the circuit detects when two new regions that share the same parent region have become <span class="hl">spatially adjacent</span>. When this happens, it merges them by: (1) marking the smaller region as invalid in RT1, (2) setting the smaller region's "corrected label" field to point to the larger region's label. All future references to the invalid label will be redirected to the survivor.</p>
+
+  <h3>Pixel Counting and Cleanup</h3>
+  <p>Simultaneously with merging, the circuit counts the number of pixels in each region and writes these counts to RT1. After the prediction scan completes, a post-processing pass through RT1 performs cleanup: (1) merged regions have their pixel counts combined, (2) regions whose pixel count falls below a minimum threshold are <span class="hr">deleted</span> (marked invalid). This prevents the system from being cluttered with tiny noise regions.</p>
+
+  <h3>Prediction Map Rewrite Optimization</h3>
+  <p>Normally, after RT cleanup changes some labels (merging/deleting), the prediction map should be rewritten with the corrected labels. This would require an additional full-image pass. The proposed design <span class="hl">eliminates this pass</span> by performing online label correction in Cache AG: when the next frame reads from the prediction map (which becomes the "current label map"), Cache AG checks each label against RT0 and substitutes corrected labels on the fly. This optimization, combined with using the 1st-iteration motion model for prediction instead of waiting for the 2nd, saves approximately <span class="hg">40% of bottom-hierarchy-level cycles</span>.</p>
+</div>
+</section>
+
+<!-- ══════ TIMING ══════ -->
+<section id="timing">
+<div class="ct">
+  <div class="sl">Timing</div>
+  <h2>Timing Diagram &amp; Cycle Breakdown</h2>
+  <p>With 3 hierarchy levels and 2 iterations per level, the total cycle count for one VGA frame is:</p>
+
+  <div class="bd">
+    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" font-family="'Instrument Sans',sans-serif">
+      <!-- Timing diagram -->
+      <text x="5" y="15" fill="#555" font-size="9" font-weight="600">Hierarchy Level</text>
+      <text x="5" y="52" fill="#0055d4" font-size="9" font-weight="600">Level 2 (160×120)</text>
+      <text x="5" y="92" fill="#0055d4" font-size="9" font-weight="600">Level 1 (320×240)</text>
+      <text x="5" y="132" fill="#0055d4" font-size="9" font-weight="600">Level 0 (640×480)</text>
+      <text x="5" y="182" fill="#66a" font-size="9" font-weight="600">Prediction</text>
+
+      <!-- Level 2 -->
+      <rect x="150" y="35" width="50" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="175" y="51" text-anchor="middle" fill="#0055d4" font-size="7">iter 1</text>
+      <rect x="205" y="35" width="50" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="230" y="51" text-anchor="middle" fill="#0055d4" font-size="7">iter 2</text>
+      <rect x="258" y="40" width="22" height="15" rx="2" fill="#e8f4e8" stroke="#a0d8a0"/>
+      <text x="269" y="51" text-anchor="middle" fill="#2a7a2a" font-size="6">θ</text>
+
+      <!-- Level 1 -->
+      <rect x="290" y="75" width="80" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="330" y="91" text-anchor="middle" fill="#0055d4" font-size="7">iter 1</text>
+      <rect x="375" y="75" width="80" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="415" y="91" text-anchor="middle" fill="#0055d4" font-size="7">iter 2</text>
+      <rect x="458" y="80" width="22" height="15" rx="2" fill="#e8f4e8" stroke="#a0d8a0"/>
+      <text x="469" y="91" text-anchor="middle" fill="#2a7a2a" font-size="6">θ</text>
+
+      <!-- Level 0 -->
+      <rect x="490" y="115" width="100" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="540" y="131" text-anchor="middle" fill="#0055d4" font-size="7">iter 1 + pred</text>
+      <rect x="595" y="115" width="100" height="25" rx="3" fill="#eef4ff" stroke="#0055d4"/>
+      <text x="645" y="131" text-anchor="middle" fill="#0055d4" font-size="7">iter 2</text>
+      <rect x="698" y="120" width="18" height="15" rx="2" fill="#e8f4e8" stroke="#a0d8a0"/>
+      <text x="707" y="131" text-anchor="middle" fill="#2a7a2a" font-size="6">θ</text>
+
+      <!-- Prediction -->
+      <rect x="490" y="168" width="100" height="22" rx="3" fill="#e8e0f0" stroke="#b0a0d0"/>
+      <text x="540" y="183" text-anchor="middle" fill="#66a" font-size="7">label warp + RT fix</text>
+
+      <!-- Arrows showing data flow down -->
+      <line x1="269" y1="60" x2="290" y2="75" stroke="#888" stroke-dasharray="3,2"/>
+      <line x1="469" y1="95" x2="490" y2="115" stroke="#888" stroke-dasharray="3,2"/>
+      <line x1="540" y1="140" x2="540" y2="168" stroke="#888" stroke-dasharray="3,2"/>
+
+      <!-- Annotation -->
+      <text x="540" y="210" text-anchor="middle" fill="#c44" font-size="8" font-weight="600">Optimization: prediction uses iter 1 model (not iter 2) → saves ~40% of level 0 cycles</text>
+
+      <!-- Each block label -->
+      <text x="180" y="30" text-anchor="middle" fill="#888" font-size="7">Grad→Weight→Moment→Labeling | θ calc</text>
+    </svg>
+    <div class="bd-cap">Fig. 9 — Timing diagram for 3 hierarchy levels × 2 iterations. At level 0, prediction is overlapped with iter 1 using the 1st-iteration model to save cycles.</div>
+  </div>
+
+  <p>Each "iteration" block contains the full pixel pipeline: gradient → accuracy → weight → moment accumulation → labeling for all pixels in the hierarchy-level image, followed by motion model calculation (inverse matrix) for all active regions.</p>
+
+  <table class="spec">
+    <tr><th>Parameter</th><th>Value</th><th>Detail</th></tr>
+    <tr><td>Frame size</td><td>640 × 480</td><td>VGA resolution</td></tr>
+    <tr><td>Hierarchy levels</td><td>3</td><td>160×120, 320×240, 640×480</td></tr>
+    <tr><td>Iterations/level</td><td>2</td><td>Each includes full pixel scan + model calc</td></tr>
+    <tr><td>Max regions</td><td>32</td><td>Configurable up to 128</td></tr>
+    <tr><td>Pipeline latency</td><td>22 cycles</td><td>Cache AG through labeling output</td></tr>
+    <tr><td>Context switch</td><td>~4 cycles</td><td>At each region boundary during scan</td></tr>
+    <tr><td>Inverse matrix</td><td>444 cycles/region</td><td>Gauss-Jordan on 7×7 matrix</td></tr>
+    <tr><td>Model multiply</td><td>57 cycles/region</td><td>θ = G⁻¹·d (7-element vector)</td></tr>
+    <tr><td>Level 2 total</td><td>88,540 cycles</td><td>Smallest image: 160×120 × 2 iter</td></tr>
+    <tr><td>Level 1 total</td><td>221,758 cycles</td><td>Medium image: 320×240 × 2 iter</td></tr>
+    <tr><td>Level 0 total</td><td>718,622 cycles</td><td>Full image: 640×480 × 2 iter (optimized)</td></tr>
+    <tr><td>Frame total</td><td>1,028,920 cycles</td><td>Sum of all levels + prediction</td></tr>
+    <tr><td>Required freq @ 60fps</td><td>62 MHz</td><td>1,028,920 × 60 = 61.7 MHz</td></tr>
+    <tr><td>Max freq achieved</td><td>94 MHz</td><td>→ 91 fps throughput</td></tr>
+  </table>
+
+  <h3>Where Do the Cycles Go?</h3>
+  <p>The vast majority of cycles are spent in the pixel-scanning pipeline (gradient through labeling). For level 0 at full VGA resolution: 640 × 480 = 307,200 pixels per scan, and with 2 iterations that's ~614,400 pixel cycles. The remaining cycles come from: region boundary context switches (~4 cycles × number of boundaries), motion model calculation (444 + 57 cycles × 32 regions = ~16,000 cycles per iteration), and pipeline latency (22 cycles per scan startup).</p>
+
+  <h3>Comparison with Conventional</h3>
+  <div class="info">
+    <strong>Conventional:</strong> 167 MHz required for VGA 30 fps. <strong>Proposed:</strong> 62 MHz for VGA 60 fps. At the same clock frequency, the proposed design achieves <strong>&gt;5× throughput</strong>. This comes from: (1) eliminating redundant gradient/accuracy computations, (2) unifying boundary update and new region detection, (3) removing the need for full-frame internal buffers, and (4) the ~40% cycle reduction from prediction optimizations.
+  </div>
+</div>
+</section>
+
+<!-- ══════ SIGNALS ══════ -->
+<section id="signals">
+<div class="ct">
+  <div class="sl">Reference</div>
+  <h2>Signal Bit Widths</h2>
+
+  <table class="spec">
+    <tr><th>Signal</th><th>Width</th><th>Format / Notes</th></tr>
+    <tr><td>Label</td><td>8 bits</td><td>Up to 256 regions (128 max used)</td></tr>
+    <tr><td>Motion model a₀,a₃,ξ</td><td>16 bits</td><td>8 integer + 8 fractional (translation/brightness)</td></tr>
+    <tr><td>Motion model a₁,a₂,a₄,a₅</td><td>16 bits</td><td>1 integer + 15 fractional (rotation/scale)</td></tr>
+    <tr><td>x coordinate</td><td>14 bits</td><td>10 integer + 4 fractional</td></tr>
+    <tr><td>y coordinate</td><td>13 bits</td><td>9 integer + 4 fractional</td></tr>
+    <tr><td>Pixel value</td><td>8 bits</td><td>Grayscale luminance</td></tr>
+    <tr><td>Gradient (Ix, Iy, It)</td><td>8 bits</td><td>It clipped to [−128, 127]</td></tr>
+    <tr><td>Accuracy index qᵢ</td><td>5 bits</td><td>1 integer + 4 fractional</td></tr>
+    <tr><td>Weight wᵢ</td><td>1 bit</td><td>Binary inlier/outlier</td></tr>
+    <tr><td>G,d (accumulation)</td><td>32 bits</td><td>Fixed-point, rounded by region pixel count</td></tr>
+    <tr><td>G,d (model calc)</td><td>40 bits</td><td>Floating-point: 32b mantissa + 8b exponent</td></tr>
+    <tr><td>Energy</td><td>9 bits</td><td>MRF energy per candidate label</td></tr>
+  </table>
+</div>
+</section>
+
+<!-- ══════ MEMORY ══════ -->
+<section id="memory">
+<div class="ct">
+  <div class="sl">Reference</div>
+  <h2>On-Chip Memory Map</h2>
+
+  <table class="spec">
+    <tr><th>Name</th><th>Config</th><th>Count</th><th>Function</th></tr>
+    <tr><td>RT</td><td>8×128 + 16×128</td><td>2 each</td><td>Region Table (valid bits, corrected labels, pixel counts)</td></tr>
+    <tr><td>MMT</td><td>32×128 + 16×128</td><td>9 + 1</td><td>Motion Model Table (7 params per region)</td></tr>
+    <tr><td>NIC</td><td>8×1K</td><td>16</td><td>Next Image Cache (25 rows, 16 banks)</td></tr>
+    <tr><td>WB</td><td>32×1K</td><td>2</td><td>Weight calc line buffers (2 rows)</td></tr>
+    <tr><td>Gd</td><td>32×512</td><td>8</td><td>Gradient moment accumulators</td></tr>
+    <tr><td>LB</td><td>8×1K + 16×1K</td><td>1 each</td><td>Region labeling line buffer</td></tr>
+    <tr><td>PB</td><td>16×1K</td><td>1</td><td>Prediction line buffer</td></tr>
+  </table>
+
+  <p style="margin-top:1rem"><strong>Total on-chip memory:</strong> 404 Kbits. <strong>Total logic gates:</strong> 320,266 (2-input NAND equivalent). <strong>Die area:</strong> 4.1 × 4.1 mm² in Rohm 0.18 µm 5-metal CMOS.</p>
+</div>
+</section>
+
+<footer>
+  Based on: M. Miyama and Y. Matsuda, "VGA 91 fps Affine Motion Segmentation Processor for Video Recognition," IEICE Trans. D, Vol. J97-D, No. 6, 2014. — Kanazawa University.
+</footer>
+
+</div>
+</body>
+</html>
